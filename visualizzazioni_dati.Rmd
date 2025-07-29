@@ -1,0 +1,32 @@
+---
+title: "Visualizzazioni Dati in Bioinformatica"
+output: html_document
+---
+
+# Rappresentare Dati Biologici
+
+La visualizzazione è cruciale per interpretare i complessi dataset della bioinformatica.
+Qui esploreremo come creare grafici efficaci per presentare i tuoi risultati, utilizzando pacchetti come `ggplot2`.
+
+---
+
+## Esempio di Grafico con `ggplot2`
+
+```R
+library(ggplot2)
+
+# Dati di esempio (ipotetici valori di espressione genica)
+data_espressione <- data.frame(
+  Gene = c("GeneA", "GeneB", "GeneC", "GeneD", "GeneE"),
+  Espressione = c(10, 15, 8, 20, 12),
+  Trattamento = c("Controllo", "Trattato", "Controllo", "Trattato", "Controllo")
+)
+
+# Grafico a barre dell'espressione genica
+ggplot(data_espressione, aes(x = Gene, y = Espressione, fill = Trattamento)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Espressione Genica in Diversi Trattamenti",
+       y = "Livello di Espressione",
+       x = "Gene") +
+  theme_minimal() +
+  scale_fill_manual(values = c("Controllo" = "lightblue", "Trattato" = "salmon"))
