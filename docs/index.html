@@ -284,16 +284,142 @@ programmazione R.</p>
 della bioinformatica, dall’analisi genomica alla visualizzazione di dati
 complessi.</p>
 <hr />
-<div id="cosa-troverai" class="section level2">
-<h2>Cosa Troverai:</h2>
-<ul>
-<li><strong>Analisi Genomica</strong>: Approfondimenti sulle tecniche di
-analisi di sequenze di DNA e RNA.</li>
-<li><strong>Visualizzazioni Dati</strong>: Come creare grafici
-significativi per interpretare i risultati biologici.</li>
-</ul>
-<p>Spero che questo sito possa essere una risorsa utile per chiunque sia
-interessato alla bioinformatica!</p>
+<div id="connettersi-al-database-ensembl-biomart"
+class="section level2">
+<h2>Connettersi al database Ensembl BioMart</h2>
+<p>Cerchiamo la categoria (MART) dei Database Biomart</p>
+<pre class="r"><code>library(biomaRt)
+listMarts()</code></pre>
+<pre><code>##                biomart                version
+## 1 ENSEMBL_MART_ENSEMBL      Ensembl Genes 114
+## 2   ENSEMBL_MART_MOUSE      Mouse strains 114
+## 3     ENSEMBL_MART_SNP  Ensembl Variation 114
+## 4 ENSEMBL_MART_FUNCGEN Ensembl Regulation 114</code></pre>
+<p>Connessione al server principale di Ensembl BioMart tramite il
+comando useMart(“ensembl”):</p>
+<pre class="r"><code>A &lt;- useMart(&quot;ensembl&quot;)
+
+listDatasets(A)[1:5,1:2]</code></pre>
+<pre><code>##                        dataset                           description
+## 1 abrachyrhynchus_gene_ensembl Pink-footed goose genes (ASM259213v1)
+## 2     acalliptera_gene_ensembl      Eastern happy genes (fAstCal1.3)
+## 3   acarolinensis_gene_ensembl       Green anole genes (AnoCar2.0v2)
+## 4    acchrysaetos_gene_ensembl       Golden eagle genes (bAquChr1.2)
+## 5    acitrinellus_gene_ensembl        Midas cichlid genes (Midas_v5)</code></pre>
+<pre class="r"><code>str(A)</code></pre>
+<pre><code>## Formal class &#39;Mart&#39; [package &quot;biomaRt&quot;] with 8 slots
+##   ..@ biomart    : chr &quot;ENSEMBL_MART_ENSEMBL&quot;
+##   ..@ host       : chr &quot;https://www.ensembl.org:443/biomart/martservice&quot;
+##   ..@ vschema    : chr &quot;default&quot;
+##   ..@ version    : chr &quot;&quot;
+##   ..@ dataset    : chr &quot;&quot;
+##   ..@ filters    :&#39;data.frame&#39;:  0 obs. of  0 variables
+## Formal class &#39;data.frame&#39; [package &quot;methods&quot;] with 4 slots
+##   .. .. ..@ .Data    : list()
+##   .. .. ..@ names    : chr(0) 
+##   .. .. ..@ row.names: int(0) 
+##   .. .. ..@ .S3Class : chr &quot;data.frame&quot;
+##   ..@ attributes :&#39;data.frame&#39;:  0 obs. of  0 variables
+## Formal class &#39;data.frame&#39; [package &quot;methods&quot;] with 4 slots
+##   .. .. ..@ .Data    : list()
+##   .. .. ..@ names    : chr(0) 
+##   .. .. ..@ row.names: int(0) 
+##   .. .. ..@ .S3Class : chr &quot;data.frame&quot;
+##   ..@ http_config: list()</code></pre>
+<p>Greppiamo tutti i dataset che contengono la parola “sapiens”</p>
+<pre class="r"><code>listDatasets(A)[grep(&quot;sapiens&quot;, listDatasets(A)$dataset), ]</code></pre>
+<pre><code>##                  dataset              description    version
+## 80 hsapiens_gene_ensembl Human genes (GRCh38.p14) GRCh38.p14</code></pre>
+<p>Selezioniamo il dataset specifico per il genoma umano, cioè la specie
+“Homo sapiens genes (GRCh38.p5)”</p>
+<pre class="r"><code>B &lt;- useDataset(&quot;hsapiens_gene_ensembl&quot;, mart = A)
+
+str(B)</code></pre>
+<pre><code>## Formal class &#39;Mart&#39; [package &quot;biomaRt&quot;] with 8 slots
+##   ..@ biomart    : chr &quot;ENSEMBL_MART_ENSEMBL&quot;
+##   ..@ host       : chr &quot;https://www.ensembl.org:443/biomart/martservice&quot;
+##   ..@ vschema    : chr &quot;default&quot;
+##   ..@ version    : chr &quot;&quot;
+##   ..@ dataset    : chr &quot;hsapiens_gene_ensembl&quot;
+##   ..@ filters    :&#39;data.frame&#39;:  441 obs. of  9 variables:
+##   .. ..$ name           : chr [1:441] &quot;chromosome_name&quot; &quot;start&quot; &quot;end&quot; &quot;band_start&quot; ...
+##   .. ..$ description    : chr [1:441] &quot;Chromosome/scaffold name&quot; &quot;Start&quot; &quot;End&quot; &quot;Band Start&quot; ...
+##   .. ..$ options        : chr [1:441] &quot;[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,GL000008.2,GL000009.2,GL000194.1,GL000195.1,GL000205.&quot;| __truncated__ &quot;[]&quot; &quot;[]&quot; &quot;[]&quot; ...
+##   .. ..$ fullDescription: chr [1:441] &quot;&quot; &quot;Determine which base pair on the specified chromosome/scaffold to begin range&quot; &quot;Determine which base pair on the specified chromosome/scaffold to end range&quot; &quot;&quot; ...
+##   .. ..$ filters        : chr [1:441] &quot;filters&quot; &quot;filters&quot; &quot;filters&quot; &quot;filters&quot; ...
+##   .. ..$ type           : chr [1:441] &quot;text&quot; &quot;text&quot; &quot;text&quot; &quot;text&quot; ...
+##   .. ..$ operation      : chr [1:441] &quot;=&quot; &quot;&gt;=&quot; &quot;&lt;=&quot; &quot;=&quot; ...
+##   .. ..$ NA             : chr [1:441] &quot;hsapiens_gene_ensembl__gene__main&quot; &quot;hsapiens_gene_ensembl__gene__main&quot; &quot;hsapiens_gene_ensembl__gene__main&quot; &quot;pointer dataset&quot; ...
+##   .. ..$ NA             : chr [1:441] &quot;name_1059&quot; &quot;seq_region_end_1020&quot; &quot;seq_region_start_1020&quot; &quot;band_1027&quot; ...
+##   ..@ attributes :&#39;data.frame&#39;:  3170 obs. of  7 variables:
+##   .. ..$ name           : chr [1:3170] &quot;ensembl_gene_id&quot; &quot;ensembl_gene_id_version&quot; &quot;ensembl_transcript_id&quot; &quot;ensembl_transcript_id_version&quot; ...
+##   .. ..$ description    : chr [1:3170] &quot;Gene stable ID&quot; &quot;Gene stable ID version&quot; &quot;Transcript stable ID&quot; &quot;Transcript stable ID version&quot; ...
+##   .. ..$ fullDescription: chr [1:3170] &quot;Stable ID of the Gene&quot; &quot;Versionned stable ID of the Gene&quot; &quot;Stable ID of the Transcript&quot; &quot;Versionned stable ID of the Transcript&quot; ...
+##   .. ..$ page           : chr [1:3170] &quot;feature_page&quot; &quot;feature_page&quot; &quot;feature_page&quot; &quot;feature_page&quot; ...
+##   .. ..$ NA             : chr [1:3170] &quot;html,txt,csv,tsv,xls&quot; &quot;html,txt,csv,tsv,xls&quot; &quot;html,txt,csv,tsv,xls&quot; &quot;html,txt,csv,tsv,xls&quot; ...
+##   .. ..$ NA             : chr [1:3170] &quot;hsapiens_gene_ensembl__gene__main&quot; &quot;hsapiens_gene_ensembl__gene__main&quot; &quot;hsapiens_gene_ensembl__transcript__main&quot; &quot;hsapiens_gene_ensembl__transcript__main&quot; ...
+##   .. ..$ NA             : chr [1:3170] &quot;stable_id_1023&quot; &quot;gene__main_stable_id_version&quot; &quot;stable_id_1066&quot; &quot;transcript__main_stable_id_version&quot; ...
+##   ..@ http_config: list()</code></pre>
+<p>Lista degli attributi del Dataset Genoma Umano (ne riportiamo solo 5
+per brevità):</p>
+<pre class="r"><code>B@attributes[1:5,1:2]</code></pre>
+<pre><code>##                            name                  description
+## 1               ensembl_gene_id               Gene stable ID
+## 2       ensembl_gene_id_version       Gene stable ID version
+## 3         ensembl_transcript_id         Transcript stable ID
+## 4 ensembl_transcript_id_version Transcript stable ID version
+## 5            ensembl_peptide_id            Protein stable ID</code></pre>
+<p>Chiediamo la lista dei cromosomi. I primi valori, come “1”, “2”, …,
+“22”, sono i cromosomi numerici standard.</p>
+<pre class="r"><code>CHR &lt;- getBM(
+  attributes = &quot;chromosome_name&quot;,
+  mart = B
+)
+
+CHR[1:10,]</code></pre>
+<pre><code>##  [1] &quot;1&quot;  &quot;10&quot; &quot;11&quot; &quot;12&quot; &quot;13&quot; &quot;14&quot; &quot;15&quot; &quot;16&quot; &quot;17&quot; &quot;18&quot;</code></pre>
+<p>Di tutto il genoma umano filtriamo il solo cromosoma 21 con i suoi
+attributi: “Ensembl Gene ID”, “Ensembl Transcript ID”, “Associated Gene
+Name” e “Description”.</p>
+<pre class="r"><code>CHR21 &lt;- getBM(
+  attributes = c(&quot;ensembl_gene_id&quot;,
+    &quot;ensembl_transcript_id&quot;,
+    &quot;external_gene_name&quot;,
+    &quot;description&quot;),
+  filters = &quot;chromosome_name&quot;,
+  values = &quot;21&quot;,
+  mart = B
+)
+
+CHR21[1:5,]</code></pre>
+<pre><code>##   ensembl_gene_id ensembl_transcript_id external_gene_name
+## 1 ENSG00000286057       ENST00000652328                   
+## 2 ENSG00000286146       ENST00000652246                   
+## 3 ENSG00000278678       ENST00000616920            CYCSP41
+## 4 ENSG00000279647       ENST00000624595                   
+## 5 ENSG00000280372       ENST00000624662                   
+##                                                    description
+## 1                                                          TEC
+## 2                                                          TEC
+## 3        CYCS pseudogene 41 [Source:HGNC Symbol;Acc:HGNC:2580]
+## 4 clustered mitochondria (cluA/CLU1) homolog (CLUH) pseudogene
+## 5                                                          TEC</code></pre>
+<pre class="r"><code>dim(CHR21)</code></pre>
+<pre><code>## [1] 5645    4</code></pre>
+<p>Osserviamo che ogni gene può generare più di un trascritti:</p>
+<pre class="r"><code>TRAS_CHR21 &lt;- CHR21[order(CHR21$ensembl_gene_id), ][1:10,1:2]
+TRAS_CHR21</code></pre>
+<pre><code>##     ensembl_gene_id ensembl_transcript_id
+## 576 ENSG00000141956       ENST00000470586
+## 577 ENSG00000141956       ENST00000486812
+## 578 ENSG00000141956       ENST00000447016
+## 579 ENSG00000141956       ENST00000398548
+## 580 ENSG00000141956       ENST00000422911
+## 581 ENSG00000141956       ENST00000441787
+## 582 ENSG00000141956       ENST00000449395
+## 583 ENSG00000141956       ENST00000269844
+## 584 ENSG00000141956       ENST00000465955
+## 585 ENSG00000141956       ENST00000477633</code></pre>
 </div>
 </div>
 

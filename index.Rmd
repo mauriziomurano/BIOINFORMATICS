@@ -11,9 +11,131 @@ Qui troverete risorse, tutorial ed esempi pratici su diverse aree della bioinfor
 
 ---
 
-## Cosa Troverai:
+## Connettersi al database Ensembl BioMart
 
-* **Analisi Genomica**: Approfondimenti sulle tecniche di analisi di sequenze di DNA e RNA.
-* **Visualizzazioni Dati**: Come creare grafici significativi per interpretare i risultati biologici.
+Cerchiamo la categoria (MART) dei Database Biomart
+```{r}
+library(biomaRt)
+listMarts()
+```
 
-Spero che questo sito possa essere una risorsa utile per chiunque sia interessato alla bioinformatica!
+Connessione al server principale di Ensembl BioMart tramite il comando useMart("ensembl"):
+
+```{r}
+A <- useMart("ensembl")
+
+listDatasets(A)[1:5,1:2]
+
+str(A)
+
+
+
+```
+
+
+Greppiamo tutti i dataset che contengono la parola "sapiens"
+
+```{r}
+listDatasets(A)[grep("sapiens", listDatasets(A)$dataset), ]
+```
+
+
+Selezioniamo il dataset specifico per il genoma umano, cioè la specie "Homo sapiens genes (GRCh38.p5)"
+
+```{r}
+B <- useDataset("hsapiens_gene_ensembl", mart = A)
+
+str(B)
+```
+
+Lista degli attributi del Dataset Genoma Umano (ne riportiamo solo 5 per brevità):
+```{r}
+B@attributes[1:5,1:2]
+```
+
+
+Chiediamo la lista dei cromosomi. I primi valori, come "1", "2", ..., "22", sono i cromosomi numerici standard.
+ 
+```{r}
+CHR <- getBM(
+  attributes = "chromosome_name",
+  mart = B
+)
+
+CHR[1:10,]
+
+```
+
+
+Di tutto il genoma umano filtriamo il solo cromosoma 21 con i suoi attributi: "Ensembl Gene ID", "Ensembl Transcript ID", "Associated Gene Name" e "Description".
+
+
+```{r}
+CHR21 <- getBM(
+  attributes = c("ensembl_gene_id",
+    "ensembl_transcript_id",
+    "external_gene_name",
+    "description"),
+  filters = "chromosome_name",
+  values = "21",
+  mart = B
+)
+
+CHR21[1:5,]
+
+dim(CHR21)
+```
+
+
+Osserviamo che ogni gene può generare più di un trascritti:
+
+```{r}
+TRAS_CHR21 <- CHR21[order(CHR21$ensembl_gene_id), ][1:10,1:2]
+TRAS_CHR21
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
