@@ -1,6 +1,9 @@
 name: "bioinformaticswebsite"
 navbar:
   title: "BIOINFORMATICS"
+  # Sfondo viola per la navbar
+  bg: "#8A2BE2"       # Un tono di viola (Blue Violet)
+  text_color: "white" # Testo bianco per contrasto
   left:
     - text: "Home"
       href: index.html
