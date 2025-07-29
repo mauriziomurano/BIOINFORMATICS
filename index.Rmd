@@ -3,15 +3,27 @@ title: "Benvenuti nel Sito di Bioinformatica"
 output: html_document
 ---
 
-# Esplorando la Bioinformatica con R
+## Esplorando la Bioinformatica con R
+
+Ciao sono Maurizio.
 
 Benvenuti nel sito dedicato alla bioinformatica, dove esploreremo analisi di dati biologici complessi utilizzando il potente linguaggio di programmazione R.
 
-Qui troverete risorse, tutorial ed esempi pratici su diverse aree della bioinformatica, dall'analisi genomica alla visualizzazione di dati complessi.
+Questo è un sito di miei appunti di "viaggio" nel mondo della Bioinformatica per cercare di riassumere le cose più interessanti e gli esercizi utili ad esplorare questo mondo al confine tra la biologia, la genetica, la statistica e l'informatica.
 
 ---
 
-## Connettersi al database Ensembl BioMart
+Cominciamo a familiarizzare col formato FASTA, andiamo ciè a prendere le basi nucleiche che compongono uno dei tanti trascritti di un gene del genoma umano e costruiamo un formato FASTA.
+
+### Connettersi al database Ensembl BioMart e scaricare il genoma umano
+
+
+```{r,eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("biomaRt")
+```
+
 
 Cerchiamo la categoria (MART) dei Database Biomart
 ```{r}
@@ -28,8 +40,6 @@ listDatasets(A)[1:5,1:2]
 
 str(A)
 
-
-
 ```
 
 
@@ -45,7 +55,7 @@ Selezioniamo il dataset specifico per il genoma umano, cioè la specie "Homo sap
 ```{r}
 B <- useDataset("hsapiens_gene_ensembl", mart = A)
 
-str(B)
+slotNames(B)
 ```
 
 Lista degli attributi del Dataset Genoma Umano (ne riportiamo solo 5 per brevità):
@@ -53,6 +63,8 @@ Lista degli attributi del Dataset Genoma Umano (ne riportiamo solo 5 per brevit�
 B@attributes[1:5,1:2]
 ```
 
+
+### Isoliamo il cromosoma 21
 
 Chiediamo la lista dei cromosomi. I primi valori, come "1", "2", ..., "22", sono i cromosomi numerici standard.
  
@@ -62,10 +74,28 @@ CHR <- getBM(
   mart = B
 )
 
-CHR[1:10,]
+CHR[1:21,]
 
 ```
 
+
+```{r}
+CHR21 <- getBM(
+  attributes = c("ensembl_gene_id"),
+  filters = "chromosome_name",
+  values = "21",
+  mart = B
+)
+
+CHR21[1:5,]
+
+dim(CHR21)
+```
+
+
+
+
+### Recuperare i geni e i trascritti localizzati sul cromosoma 21
 
 Di tutto il genoma umano filtriamo il solo cromosoma 21 con i suoi attributi: "Ensembl Gene ID", "Ensembl Transcript ID", "Associated Gene Name" e "Description".
 
@@ -74,8 +104,9 @@ Di tutto il genoma umano filtriamo il solo cromosoma 21 con i suoi attributi: "E
 CHR21 <- getBM(
   attributes = c("ensembl_gene_id",
     "ensembl_transcript_id",
-    "external_gene_name",
-    "description"),
+    "external_gene_name", # Aggiunto per recuperare l'Associated Gene Name
+    "description"         # Aggiunto per recuperare la Description
+  ),
   filters = "chromosome_name",
   values = "21",
   mart = B
@@ -95,26 +126,109 @@ TRAS_CHR21
 ```
 
 
+### Prendiamo tutti i trascritti di uno stesso Gene
+
+```{r}
+TR_GEN_141956 <- getBM(
+  attributes = c("ensembl_gene_id",
+    "ensembl_transcript_id"
+  ),
+  filters = c("ensembl_gene_id", "chromosome_name"),
+  values = list(ensembl_gene_id = "ENSG00000141956", chromosome_name = "21"),
+  mart = B
+)
+
+TR_GEN_141956
+```
 
 
 
 
 
+### Scaricare le sequenze nucleotidiche dei trascritti annotati nel cromosoma 21 umano del Gene ENSG00000141956 
+
+```{r}
+
+SUBSET <- TR_GEN_141956$ensembl_transcript_id #tutti i trascritti di uno stesso Gene ENSG00000141956
+
+
+SEQ_NUC_21_GEN_141956 <- getBM(
+  attributes = c(
+    "ensembl_transcript_id",
+    "cdna"
+  ),
+  filters = "ensembl_transcript_id", 
+  values = SUBSET,
+  mart = B
+)
+
+SEQ_NUC_21_GEN_141956_TRAS_477633 <-  SEQ_NUC_21_GEN_141956[1,2]
+
+SEQ_NUC_21_GEN_141956_TRAS_477633 #esempio di cdna
+```
+
+
+### Scaricare la sequenza nucleotidica di un solo trascritto ENST00000422911 annotato nel cromosoma 21 umano del Gene ENSG00000141956 
+
+```{r}
+
+ATTRIBUTI <- c(
+  "ensembl_gene_id",
+  "external_gene_name",
+  "ensembl_transcript_id",
+  "chromosome_name",
+  "transcript_start",
+  "transcript_end",
+  "strand",
+  "cdna_coding_start", # Inizio CDS (region codificante) all'interno del cDNA
+  "cdna_coding_end",   # Fine CDS (region codificante) all'interno del cDNA
+  "cdna",              # La sequenza cDNA
+  "transcript_biotype" # Utile per capire perché alcuni coding_start/end sono NA
+)
+
+TR_GEN_141956_TRA_422911 <- getBM(
+  attributes = ATTRIBUTI,
+  filters = c("ensembl_gene_id", "chromosome_name","ensembl_transcript_id"),
+  values = list(ensembl_gene_id = "ENSG00000141956", chromosome_name = "21",ensembl_transcript_id = "ENST00000422911"),
+  mart = B
+)
+```
 
 
 
 
+### Formattare e salvare la sequenza nucleotidica specifica in formato FASTA (trascritto ENST00000422911 annotato nel cromosoma 21 umano del Gene ENSG00000141956)
+
+L'output di getBM è un data frame. Per ottenere il formato FASTA, dobbiamo costruire l'intestazione per ogni sequenza. La struttura dell'intestazione desiderata è:
+
+>ENSG00000010072|SPRTN|ENST00000008440|1|231338256|231352521|1|450;350;129|752;449;349
+
+>ensembl_gene_id|external_gene_name|ensembl_transcript_id|chromosome_name|transcript_.....
 
 
+FASTA_OUTPUT <- paste0(fasta_HEADER, "\n", CDNA, "\n")
 
 
+```{r}
+
+FASTA_HEADER <- paste0(
+    ">", TR_GEN_141956_TRA_422911$ensembl_gene_id, "|",
+    TR_GEN_141956_TRA_422911$external_gene_name, "|",
+    TR_GEN_141956_TRA_422911$ensembl_transcript_id, "|",
+    TR_GEN_141956_TRA_422911$chromosome_name, "|",
+    TR_GEN_141956_TRA_422911$transcript_start, "|",
+    TR_GEN_141956_TRA_422911$transcript_end, "|",
+    TR_GEN_141956_TRA_422911$strand, "|",
+    TR_GEN_141956_TRA_422911$cdna_coding_start, "|",
+    TR_GEN_141956_TRA_422911$cdna_coding_end
+)
 
 
+FASTA_OUTPUT<- paste0(FASTA_HEADER, "\n", TR_GEN_141956_TRA_422911$cdna, "\n")
 
+substr(FASTA_OUTPUT, 1, 400)
 
-
-
-
+```
 
 
 
