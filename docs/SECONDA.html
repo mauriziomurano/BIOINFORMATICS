@@ -11,7 +11,7 @@
 
 
 
-<title>Visualizzazioni Dati in Bioinformatica</title>
+<title>FORMATO FASTA</title>
 
 <script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -253,6 +253,15 @@ $(document).ready(function () {
 <li>
   <a href="SECONDA.html">SECONDA</a>
 </li>
+<li>
+  <a href="TERZA.html">TERZA</a>
+</li>
+<li>
+  <a href="QUARTA.html">QUARTA</a>
+</li>
+<li>
+  <a href="QUINTA.html">QUINTA</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -270,39 +279,280 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Visualizzazioni Dati in Bioinformatica</h1>
+<h1 class="title toc-ignore">FORMATO FASTA</h1>
 
 </div>
 
 
-<div id="rappresentare-dati-biologici" class="section level1">
-<h1>Rappresentare Dati Biologici</h1>
-<p>La visualizzazione è cruciale per interpretare i complessi dataset
-della bioinformatica. Qui esploreremo come creare grafici efficaci per
-presentare i tuoi risultati, utilizzando pacchetti come
-<code>ggplot2</code>.</p>
-<hr />
-<div id="esempio-di-grafico-con-ggplot2" class="section level2">
-<h2>Esempio di Grafico con <code>ggplot2</code></h2>
-<p>```R library(ggplot2)</p>
+<div id="librerie-e-pacchetti-principali" class="section level3">
+<h3>Librerie e pacchetti principali</h3>
+<p>Cominciamo a familiarizzare col formato FASTA, andiamo ciè a prendere
+le basi nucleiche che compongono uno dei tanti trascritti di un gene del
+genoma umano e costruiamo un formato FASTA.</p>
+<p>Installazione (solo la prima volta che usi questi pacchetti)</p>
+<pre class="r"><code># install.packages(&quot;BiocManager&quot;)
+# BiocManager::install(&quot;rentrez&quot;)
+# BiocManager::install(&quot;Biostrings&quot;)
+
+library(rentrez)
+library(Biostrings)</code></pre>
+<p><br></p>
 </div>
+<div
+id="connettersi-al-database-ensembl-biomart-e-scaricare-il-genoma-umano"
+class="section level3">
+<h3>Connettersi al database <span style="font-weight: 400;">Ensembl
+BioMart</span> e scaricare il genoma umano</h3>
+<pre class="r"><code>#BiocManager::install(&quot;biomaRt&quot;)</code></pre>
+<p>Cerchiamo la categoria (MART) dei Database Biomart</p>
+<pre class="r"><code>library(biomaRt)
+listMarts()</code></pre>
+<pre><code>##                biomart                version
+## 1 ENSEMBL_MART_ENSEMBL      Ensembl Genes 114
+## 2   ENSEMBL_MART_MOUSE      Mouse strains 114
+## 3     ENSEMBL_MART_SNP  Ensembl Variation 114
+## 4 ENSEMBL_MART_FUNCGEN Ensembl Regulation 114</code></pre>
+<p>Connessione al server principale di Ensembl BioMart tramite il
+comando useMart(“ensembl”):</p>
+<pre class="r"><code>A &lt;- useMart(&quot;ensembl&quot;)
+
+listDatasets(A)[1:5,1:2]</code></pre>
+<pre><code>##                        dataset                           description
+## 1 abrachyrhynchus_gene_ensembl Pink-footed goose genes (ASM259213v1)
+## 2     acalliptera_gene_ensembl      Eastern happy genes (fAstCal1.3)
+## 3   acarolinensis_gene_ensembl       Green anole genes (AnoCar2.0v2)
+## 4    acchrysaetos_gene_ensembl       Golden eagle genes (bAquChr1.2)
+## 5    acitrinellus_gene_ensembl        Midas cichlid genes (Midas_v5)</code></pre>
+<pre class="r"><code>str(A)</code></pre>
+<pre><code>## Formal class &#39;Mart&#39; [package &quot;biomaRt&quot;] with 8 slots
+##   ..@ biomart    : chr &quot;ENSEMBL_MART_ENSEMBL&quot;
+##   ..@ host       : chr &quot;https://www.ensembl.org:443/biomart/martservice&quot;
+##   ..@ vschema    : chr &quot;default&quot;
+##   ..@ version    : chr &quot;&quot;
+##   ..@ dataset    : chr &quot;&quot;
+##   ..@ filters    :&#39;data.frame&#39;:  0 obs. of  0 variables
+## Formal class &#39;data.frame&#39; [package &quot;methods&quot;] with 4 slots
+##   .. .. ..@ .Data    : list()
+##   .. .. ..@ names    : chr(0) 
+##   .. .. ..@ row.names: int(0) 
+##   .. .. ..@ .S3Class : chr &quot;data.frame&quot;
+##   ..@ attributes :&#39;data.frame&#39;:  0 obs. of  0 variables
+## Formal class &#39;data.frame&#39; [package &quot;methods&quot;] with 4 slots
+##   .. .. ..@ .Data    : list()
+##   .. .. ..@ names    : chr(0) 
+##   .. .. ..@ row.names: int(0) 
+##   .. .. ..@ .S3Class : chr &quot;data.frame&quot;
+##   ..@ http_config: list()</code></pre>
+<p>Greppiamo tutti i dataset che contengono la parola “sapiens”</p>
+<pre class="r"><code>listDatasets(A)[grep(&quot;sapiens&quot;, listDatasets(A)$dataset), ]</code></pre>
+<pre><code>##                  dataset              description    version
+## 80 hsapiens_gene_ensembl Human genes (GRCh38.p14) GRCh38.p14</code></pre>
+<p>Selezioniamo il dataset specifico per il genoma umano, cioè la specie
+“Homo sapiens genes (GRCh38.p5)”</p>
+<pre class="r"><code>B &lt;- useDataset(&quot;hsapiens_gene_ensembl&quot;, mart = A)
+
+slotNames(B)</code></pre>
+<pre><code>## [1] &quot;biomart&quot;     &quot;host&quot;        &quot;vschema&quot;     &quot;version&quot;     &quot;dataset&quot;     &quot;filters&quot;    
+## [7] &quot;attributes&quot;  &quot;http_config&quot;</code></pre>
+<p>Lista degli attributi del Dataset Genoma Umano (ne riportiamo solo 5
+per brevità):</p>
+<pre class="r"><code>B@attributes[1:5,1:2]</code></pre>
+<pre><code>##                            name                  description
+## 1               ensembl_gene_id               Gene stable ID
+## 2       ensembl_gene_id_version       Gene stable ID version
+## 3         ensembl_transcript_id         Transcript stable ID
+## 4 ensembl_transcript_id_version Transcript stable ID version
+## 5            ensembl_peptide_id            Protein stable ID</code></pre>
+<p><br></p>
 </div>
-<div id="dati-di-esempio-ipotetici-valori-di-espressione-genica"
-class="section level1">
-<h1>Dati di esempio (ipotetici valori di espressione genica)</h1>
-<p>data_espressione &lt;- data.frame( Gene = c(“GeneA”, “GeneB”,
-“GeneC”, “GeneD”, “GeneE”), Espressione = c(10, 15, 8, 20, 12),
-Trattamento = c(“Controllo”, “Trattato”, “Controllo”, “Trattato”,
-“Controllo”) )</p>
+<div id="isoliamo-il-cromosoma-21" class="section level3">
+<h3>Isoliamo il cromosoma 21</h3>
+<p>Chiediamo la lista dei cromosomi. I primi valori, come “1”, “2”, …,
+“22”, sono i cromosomi numerici standard.</p>
+<pre class="r"><code>CHR &lt;- getBM(
+  attributes = &quot;chromosome_name&quot;,
+  mart = B
+)
+
+CHR[1:21,]</code></pre>
+<pre><code>##  [1] &quot;1&quot;  &quot;10&quot; &quot;11&quot; &quot;12&quot; &quot;13&quot; &quot;14&quot; &quot;15&quot; &quot;16&quot; &quot;17&quot; &quot;18&quot; &quot;19&quot; &quot;2&quot;  &quot;20&quot; &quot;21&quot; &quot;22&quot; &quot;3&quot;  &quot;4&quot;  &quot;5&quot;  &quot;6&quot; 
+## [20] &quot;7&quot;  &quot;8&quot;</code></pre>
+<pre class="r"><code>CHR21 &lt;- getBM(
+  attributes = c(&quot;ensembl_gene_id&quot;),
+  filters = &quot;chromosome_name&quot;,
+  values = &quot;21&quot;,
+  mart = B
+)
+
+CHR21[1:5,]</code></pre>
+<pre><code>## [1] &quot;ENSG00000279493&quot; &quot;ENSG00000277117&quot; &quot;ENSG00000279687&quot; &quot;ENSG00000280071&quot; &quot;ENSG00000275464&quot;</code></pre>
+<pre class="r"><code>dim(CHR21)</code></pre>
+<pre><code>## [1] 1134    1</code></pre>
+<p><br></p>
 </div>
-<div id="grafico-a-barre-dellespressione-genica" class="section level1">
-<h1>Grafico a barre dell’espressione genica</h1>
-<p>ggplot(data_espressione, aes(x = Gene, y = Espressione, fill =
-Trattamento)) + geom_bar(stat = “identity”, position = “dodge”) +
-labs(title = “Espressione Genica in Diversi Trattamenti”, y = “Livello
-di Espressione”, x = “Gene”) + theme_minimal() +
-scale_fill_manual(values = c(“Controllo” = “lightblue”, “Trattato” =
-“salmon”))</p>
+<div id="recuperare-i-geni-e-i-trascritti-localizzati-sul-cromosoma-21"
+class="section level3">
+<h3>Recuperare i geni e i trascritti localizzati sul cromosoma 21</h3>
+<p>Di tutto il genoma umano filtriamo il solo cromosoma 21 con i suoi
+attributi: “Ensembl Gene ID”, “Ensembl Transcript ID”, “Associated Gene
+Name” e “Description”.</p>
+<pre class="r"><code>CHR21 &lt;- getBM(
+  attributes = c(&quot;ensembl_gene_id&quot;,
+    &quot;ensembl_transcript_id&quot;,
+    &quot;external_gene_name&quot;, # Aggiunto per recuperare l&#39;Associated Gene Name
+    &quot;description&quot;         # Aggiunto per recuperare la Description
+  ),
+  filters = &quot;chromosome_name&quot;,
+  values = &quot;21&quot;,
+  mart = B
+)
+
+CHR21[1:5,]</code></pre>
+<pre><code>##   ensembl_gene_id ensembl_transcript_id external_gene_name
+## 1 ENSG00000286057       ENST00000652328                   
+## 2 ENSG00000286146       ENST00000652246                   
+## 3 ENSG00000278678       ENST00000616920            CYCSP41
+## 4 ENSG00000279647       ENST00000624595                   
+## 5 ENSG00000280372       ENST00000624662                   
+##                                                    description
+## 1                                                          TEC
+## 2                                                          TEC
+## 3        CYCS pseudogene 41 [Source:HGNC Symbol;Acc:HGNC:2580]
+## 4 clustered mitochondria (cluA/CLU1) homolog (CLUH) pseudogene
+## 5                                                          TEC</code></pre>
+<pre class="r"><code>dim(CHR21)</code></pre>
+<pre><code>## [1] 5645    4</code></pre>
+<p>Osserviamo che ogni gene può generare più di un trascritti:</p>
+<pre class="r"><code>TRAS_CHR21 &lt;- CHR21[order(CHR21$ensembl_gene_id), ][1:10,1:2]
+TRAS_CHR21</code></pre>
+<pre><code>##     ensembl_gene_id ensembl_transcript_id
+## 576 ENSG00000141956       ENST00000470586
+## 577 ENSG00000141956       ENST00000486812
+## 578 ENSG00000141956       ENST00000447016
+## 579 ENSG00000141956       ENST00000398548
+## 580 ENSG00000141956       ENST00000422911
+## 581 ENSG00000141956       ENST00000441787
+## 582 ENSG00000141956       ENST00000449395
+## 583 ENSG00000141956       ENST00000269844
+## 584 ENSG00000141956       ENST00000465955
+## 585 ENSG00000141956       ENST00000477633</code></pre>
+<p><br></p>
+</div>
+<div id="prendiamo-tutti-i-trascritti-di-uno-stesso-gene"
+class="section level3">
+<h3>Prendiamo tutti i trascritti di uno stesso Gene</h3>
+<pre class="r"><code>TR_GEN_141956 &lt;- getBM(
+  attributes = c(&quot;ensembl_gene_id&quot;,
+    &quot;ensembl_transcript_id&quot;
+  ),
+  filters = c(&quot;ensembl_gene_id&quot;, &quot;chromosome_name&quot;),
+  values = list(ensembl_gene_id = &quot;ENSG00000141956&quot;, chromosome_name = &quot;21&quot;),
+  mart = B
+)
+
+TR_GEN_141956</code></pre>
+<pre><code>##    ensembl_gene_id ensembl_transcript_id
+## 1  ENSG00000141956       ENST00000470586
+## 2  ENSG00000141956       ENST00000486812
+## 3  ENSG00000141956       ENST00000447016
+## 4  ENSG00000141956       ENST00000398548
+## 5  ENSG00000141956       ENST00000422911
+## 6  ENSG00000141956       ENST00000441787
+## 7  ENSG00000141956       ENST00000449395
+## 8  ENSG00000141956       ENST00000269844
+## 9  ENSG00000141956       ENST00000465955
+## 10 ENSG00000141956       ENST00000477633
+## 11 ENSG00000141956       ENST00000495217
+## 12 ENSG00000141956       ENST00000491486
+## 13 ENSG00000141956       ENST00000489661
+## 14 ENSG00000141956       ENST00000496124</code></pre>
+<p><br></p>
+</div>
+<div
+id="scaricare-le-sequenze-nucleotidiche-dei-trascritti-annotati-nel-cromosoma-21-umano-del-gene-ensg00000141956"
+class="section level3">
+<h3>Scaricare le sequenze nucleotidiche dei trascritti annotati nel
+cromosoma 21 umano del Gene ENSG00000141956</h3>
+<pre class="r"><code>SUBSET &lt;- TR_GEN_141956$ensembl_transcript_id #tutti i trascritti di uno stesso Gene ENSG00000141956
+
+
+SEQ_NUC_21_GEN_141956 &lt;- getBM(
+  attributes = c(
+    &quot;ensembl_transcript_id&quot;,
+    &quot;cdna&quot;
+  ),
+  filters = &quot;ensembl_transcript_id&quot;, 
+  values = SUBSET,
+  mart = B
+)
+
+SEQ_NUC_21_GEN_141956_TRAS_477633 &lt;-  SEQ_NUC_21_GEN_141956[1,2]
+
+SEQ_NUC_21_GEN_141956_TRAS_477633 #esempio di cdna</code></pre>
+<pre><code>## [1] &quot;AGGGAAGGGCAGGAGTGGTGGAGGTGGTCCCAAGGCGTGTGTGGCTTCTGGGTTCCCACCTGCATCAGCAGCACCCTGACCCCCAGCTCATGCCCTGTGCTCCTCATAGGTGCTCGCGGTGAGGATCGATGACCTGGACCACCTCCCGGAGACCACCACCATCGACGCCTCCTCCATTGGCATCGTCCAGCCTGAGCTGACTCTGGAGCAGGAGGATTTGGCCGAAGGGAAGCACGGGAAAGCTGCCAAGCGAAGTCACAAGAGAAAGCAGAAGCCAGAAGAGGAGGCGGGTGCTCCGGTGCCCGAGGACGCCACCTTCAGCGAATACTCAGAGAAAGAGACGGAGTTCACAGGCAGTGTAGGCGACGAGACCAATTCCGCAGTACAGAGCATTCAGCAGGTAGTGGTGACCCTGGGTGACCCAAATGTGACCACACCATCGAGCTCAGTCGGCTTAACCAACATC&quot;</code></pre>
+<p><br></p>
+</div>
+<div
+id="scaricare-la-sequenza-nucleotidica-di-un-solo-trascritto-enst00000422911-annotato-nel-cromosoma-21-umano-del-gene-ensg00000141956"
+class="section level3">
+<h3>Scaricare la sequenza nucleotidica di un solo trascritto
+ENST00000422911 annotato nel cromosoma 21 umano del Gene
+ENSG00000141956</h3>
+<pre class="r"><code>ATTRIBUTI &lt;- c(
+  &quot;ensembl_gene_id&quot;,
+  &quot;external_gene_name&quot;,
+  &quot;ensembl_transcript_id&quot;,
+  &quot;chromosome_name&quot;,
+  &quot;transcript_start&quot;,
+  &quot;transcript_end&quot;,
+  &quot;strand&quot;,
+  &quot;cdna_coding_start&quot;, # Inizio CDS (region codificante) all&#39;interno del cDNA
+  &quot;cdna_coding_end&quot;,   # Fine CDS (region codificante) all&#39;interno del cDNA
+  &quot;cdna&quot;,              # La sequenza cDNA
+  &quot;transcript_biotype&quot; # Utile per capire perché alcuni coding_start/end sono NA
+)
+
+TR_GEN_141956_TRA_422911 &lt;- getBM(
+  attributes = ATTRIBUTI,
+  filters = c(&quot;ensembl_gene_id&quot;, &quot;chromosome_name&quot;,&quot;ensembl_transcript_id&quot;),
+  values = list(ensembl_gene_id = &quot;ENSG00000141956&quot;, chromosome_name = &quot;21&quot;,ensembl_transcript_id = &quot;ENST00000422911&quot;),
+  mart = B
+)</code></pre>
+<p><br></p>
+</div>
+<div
+id="formattare-e-salvare-la-sequenza-nucleotidica-specifica-in-formato-fasta-trascritto-enst00000422911-annotato-nel-cromosoma-21-umano-del-gene-ensg00000141956"
+class="section level3">
+<h3>Formattare e salvare la sequenza nucleotidica specifica in formato
+FASTA (trascritto ENST00000422911 annotato nel cromosoma 21 umano del
+Gene ENSG00000141956)</h3>
+<p>L’output di getBM è un data frame. Per ottenere il formato FASTA,
+dobbiamo costruire l’intestazione per ogni sequenza. La struttura
+dell’intestazione desiderata è:</p>
+<blockquote>
+<p>ENSG00000010072|SPRTN|ENST00000008440|1|231338256|231352521|1|450;350;129|752;449;349</p>
+</blockquote>
+<blockquote>
+<p>ensembl_gene_id|external_gene_name|ensembl_transcript_id|chromosome_name|transcript_…..</p>
+</blockquote>
+<p>FASTA_OUTPUT &lt;- paste0(fasta_HEADER, “”, CDNA, “”)</p>
+<pre class="r"><code>FASTA_HEADER &lt;- paste0(
+    &quot;&gt;&quot;, TR_GEN_141956_TRA_422911$ensembl_gene_id, &quot;|&quot;,
+    TR_GEN_141956_TRA_422911$external_gene_name, &quot;|&quot;,
+    TR_GEN_141956_TRA_422911$ensembl_transcript_id, &quot;|&quot;,
+    TR_GEN_141956_TRA_422911$chromosome_name, &quot;|&quot;,
+    TR_GEN_141956_TRA_422911$transcript_start, &quot;|&quot;,
+    TR_GEN_141956_TRA_422911$transcript_end, &quot;|&quot;,
+    TR_GEN_141956_TRA_422911$strand, &quot;|&quot;,
+    TR_GEN_141956_TRA_422911$cdna_coding_start, &quot;|&quot;,
+    TR_GEN_141956_TRA_422911$cdna_coding_end
+)
+
+
+FASTA_OUTPUT&lt;- paste0(FASTA_HEADER, &quot;\n&quot;, TR_GEN_141956_TRA_422911$cdna, &quot;\n&quot;)
+
+substr(FASTA_OUTPUT, 1, 400)</code></pre>
+<pre><code>## [1] &quot;&gt;ENSG00000141956|PRDM15|ENST00000422911|21|41798225|41879473|-1|2035;2926;1397;3007;1580;499;2534;2170;2666;2334;345;752;3217;2750;854;1215;214;1808;2414;1492;251;1903;1640;1085|2169;3006;1491;3216;1639;751;2665;2333;2749;2413;498;853;3699;2925;1084;1396;250;1902;2533;1579;344;2034;1807;1214\nGTCCACGCCGCCCGCGCCCCGCAGTCCCACCCGCAGGACCCCCGGCCGCGCCAGGGTCTCGCCTGCGCCCCCCGCGCCCGCCCGCGGACTACAAGTCCCGCCATGCC&quot;</code></pre>
 </div>
 
 

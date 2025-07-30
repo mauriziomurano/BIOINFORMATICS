@@ -1,0 +1,32 @@
+/* Stile per un contenitore che affianca gli elementi (Flexbox) */
+.image-row-container {
+  display: flex; /* Rende il contenitore un flex-container */
+  flex-wrap: wrap; /* Permette alle immagini di andare a capo su schermi piccoli */
+  justify-content: center; /* Centra le immagini orizzontalmente */
+  align-items: flex-start; /* Allinea in alto, utile se le immagini hanno altezze diverse */
+  gap: 20px; /* Spazio tra le immagini. Regola questo valore! */
+  margin-top: 15px; /* Margine sopra il blocco di immagini */
+  margin-bottom: 15px; /* Margine sotto il blocco di immagini */
+}
+
+/* Regola per le immagini all'interno di questo specifico contenitore.
+   Assicurati che questa regola NON sovrascriva involontariamente altri stili immagine.
+   Se le tue immagini sono già dimensionate con {width=...} nel Markdown,
+   questa parte è meno critica, ma utile per fallback o bordi/padding.
+*/
+.image-row-container img {
+  border: 1px solid #ddd; /* Bordo opzionale */
+  padding: 5px; /* Padding opzionale intorno all'immagine dentro il bordo */
+  box-sizing: border-box; /* Include padding e border nella larghezza */
+  /* Non impostiamo max-width qui, perché vogliamo che {width=...} le controlli */
+}
+
+/* Stili per ridurre i margini verticali attorno alle immagini in generale
+   Se il problema dello spazio bianco sopra/sotto le immagini persiste,
+   potrebbe essere utile applicare queste regole anche ad altri elementi o
+   verificare stili più generali di Markdown.
+*/
+p + img, div + img, img + p, img + div {
+  margin-top: 5px; /* Riduci il margine sopra/sotto tra testo e immagini */
+  margin-bottom: 5px;
+}

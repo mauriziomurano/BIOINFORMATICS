@@ -11,34 +11,238 @@ source(file.path(Base, RDataFolder, FunctionsFile))
 ```
 
 ---
-title: "Visualizzazioni Dati in Bioinformatica"
+title: "FORMATO FASTA"
 output: html_document
 ---
 
-# Rappresentare Dati Biologici
+### Librerie e pacchetti principali
 
-La visualizzazione è cruciale per interpretare i complessi dataset della bioinformatica.
-Qui esploreremo come creare grafici efficaci per presentare i tuoi risultati, utilizzando pacchetti come `ggplot2`.
+Cominciamo a familiarizzare col formato FASTA, andiamo ciè a prendere le basi nucleiche che compongono uno dei tanti trascritti di un gene del genoma umano e costruiamo un formato FASTA.
 
----
+Installazione (solo la prima volta che usi questi pacchetti)
 
-## Esempio di Grafico con `ggplot2`
+```{r, warning=FALSE, message=FALSE}
+# install.packages("BiocManager")
+# BiocManager::install("rentrez")
+# BiocManager::install("Biostrings")
 
-```R
-library(ggplot2)
+library(rentrez)
+library(Biostrings)
+```
 
-# Dati di esempio (ipotetici valori di espressione genica)
-data_espressione <- data.frame(
-  Gene = c("GeneA", "GeneB", "GeneC", "GeneD", "GeneE"),
-  Espressione = c(10, 15, 8, 20, 12),
-  Trattamento = c("Controllo", "Trattato", "Controllo", "Trattato", "Controllo")
+<br>
+
+### Connettersi al database <span style="font-weight: 400;">Ensembl BioMart</span> e scaricare il genoma umano
+
+```{r,eval=FALSE}
+#BiocManager::install("biomaRt")
+```
+
+
+Cerchiamo la categoria (MART) dei Database Biomart
+```{r, warning=FALSE, message=FALSE}
+library(biomaRt)
+listMarts()
+```
+
+Connessione al server principale di Ensembl BioMart tramite il comando useMart("ensembl"):
+
+```{r, warning=FALSE, message=FALSE}
+A <- useMart("ensembl")
+
+listDatasets(A)[1:5,1:2]
+
+str(A)
+
+```
+
+
+Greppiamo tutti i dataset che contengono la parola "sapiens"
+
+```{r, warning=FALSE, message=FALSE}
+listDatasets(A)[grep("sapiens", listDatasets(A)$dataset), ]
+```
+
+
+Selezioniamo il dataset specifico per il genoma umano, cioè la specie "Homo sapiens genes (GRCh38.p5)"
+
+```{r, warning=FALSE, message=FALSE}
+B <- useDataset("hsapiens_gene_ensembl", mart = A)
+
+slotNames(B)
+```
+
+Lista degli attributi del Dataset Genoma Umano (ne riportiamo solo 5 per brevità):
+```{r, warning=FALSE, message=FALSE}
+B@attributes[1:5,1:2]
+```
+
+<br>
+
+### Isoliamo il cromosoma 21
+
+Chiediamo la lista dei cromosomi. I primi valori, come "1", "2", ..., "22", sono i cromosomi numerici standard.
+ 
+```{r, warning=FALSE, message=FALSE}
+CHR <- getBM(
+  attributes = "chromosome_name",
+  mart = B
 )
 
-# Grafico a barre dell'espressione genica
-ggplot(data_espressione, aes(x = Gene, y = Espressione, fill = Trattamento)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Espressione Genica in Diversi Trattamenti",
-       y = "Livello di Espressione",
-       x = "Gene") +
-  theme_minimal() +
-  scale_fill_manual(values = c("Controllo" = "lightblue", "Trattato" = "salmon"))
+CHR[1:21,]
+
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+CHR21 <- getBM(
+  attributes = c("ensembl_gene_id"),
+  filters = "chromosome_name",
+  values = "21",
+  mart = B
+)
+
+CHR21[1:5,]
+
+dim(CHR21)
+```
+
+
+<br>
+
+### Recuperare i geni e i trascritti localizzati sul cromosoma 21
+
+Di tutto il genoma umano filtriamo il solo cromosoma 21 con i suoi attributi: "Ensembl Gene ID", "Ensembl Transcript ID", "Associated Gene Name" e "Description".
+
+
+```{r, warning=FALSE, message=FALSE}
+CHR21 <- getBM(
+  attributes = c("ensembl_gene_id",
+    "ensembl_transcript_id",
+    "external_gene_name", # Aggiunto per recuperare l'Associated Gene Name
+    "description"         # Aggiunto per recuperare la Description
+  ),
+  filters = "chromosome_name",
+  values = "21",
+  mart = B
+)
+
+CHR21[1:5,]
+
+dim(CHR21)
+```
+
+
+Osserviamo che ogni gene può generare più di un trascritti:
+
+```{r, warning=FALSE, message=FALSE}
+TRAS_CHR21 <- CHR21[order(CHR21$ensembl_gene_id), ][1:10,1:2]
+TRAS_CHR21
+```
+
+<br>
+
+### Prendiamo tutti i trascritti di uno stesso Gene
+
+```{r, warning=FALSE, message=FALSE}
+TR_GEN_141956 <- getBM(
+  attributes = c("ensembl_gene_id",
+    "ensembl_transcript_id"
+  ),
+  filters = c("ensembl_gene_id", "chromosome_name"),
+  values = list(ensembl_gene_id = "ENSG00000141956", chromosome_name = "21"),
+  mart = B
+)
+
+TR_GEN_141956
+```
+
+
+<br>
+
+
+### Scaricare le sequenze nucleotidiche dei trascritti annotati nel cromosoma 21 umano del Gene ENSG00000141956 
+
+```{r, warning=FALSE, message=FALSE}
+
+SUBSET <- TR_GEN_141956$ensembl_transcript_id #tutti i trascritti di uno stesso Gene ENSG00000141956
+
+
+SEQ_NUC_21_GEN_141956 <- getBM(
+  attributes = c(
+    "ensembl_transcript_id",
+    "cdna"
+  ),
+  filters = "ensembl_transcript_id", 
+  values = SUBSET,
+  mart = B
+)
+
+SEQ_NUC_21_GEN_141956_TRAS_477633 <-  SEQ_NUC_21_GEN_141956[1,2]
+
+SEQ_NUC_21_GEN_141956_TRAS_477633 #esempio di cdna
+```
+
+<br>
+
+### Scaricare la sequenza nucleotidica di un solo trascritto ENST00000422911 annotato nel cromosoma 21 umano del Gene ENSG00000141956 
+
+```{r, warning=FALSE, message=FALSE}
+
+ATTRIBUTI <- c(
+  "ensembl_gene_id",
+  "external_gene_name",
+  "ensembl_transcript_id",
+  "chromosome_name",
+  "transcript_start",
+  "transcript_end",
+  "strand",
+  "cdna_coding_start", # Inizio CDS (region codificante) all'interno del cDNA
+  "cdna_coding_end",   # Fine CDS (region codificante) all'interno del cDNA
+  "cdna",              # La sequenza cDNA
+  "transcript_biotype" # Utile per capire perché alcuni coding_start/end sono NA
+)
+
+TR_GEN_141956_TRA_422911 <- getBM(
+  attributes = ATTRIBUTI,
+  filters = c("ensembl_gene_id", "chromosome_name","ensembl_transcript_id"),
+  values = list(ensembl_gene_id = "ENSG00000141956", chromosome_name = "21",ensembl_transcript_id = "ENST00000422911"),
+  mart = B
+)
+```
+
+
+<br>
+
+### Formattare e salvare la sequenza nucleotidica specifica in formato FASTA (trascritto ENST00000422911 annotato nel cromosoma 21 umano del Gene ENSG00000141956)
+
+L'output di getBM è un data frame. Per ottenere il formato FASTA, dobbiamo costruire l'intestazione per ogni sequenza. La struttura dell'intestazione desiderata è:
+
+>ENSG00000010072|SPRTN|ENST00000008440|1|231338256|231352521|1|450;350;129|752;449;349
+
+>ensembl_gene_id|external_gene_name|ensembl_transcript_id|chromosome_name|transcript_.....
+
+
+FASTA_OUTPUT <- paste0(fasta_HEADER, "\n", CDNA, "\n")
+
+
+```{r, warning=FALSE, message=FALSE}
+
+FASTA_HEADER <- paste0(
+    ">", TR_GEN_141956_TRA_422911$ensembl_gene_id, "|",
+    TR_GEN_141956_TRA_422911$external_gene_name, "|",
+    TR_GEN_141956_TRA_422911$ensembl_transcript_id, "|",
+    TR_GEN_141956_TRA_422911$chromosome_name, "|",
+    TR_GEN_141956_TRA_422911$transcript_start, "|",
+    TR_GEN_141956_TRA_422911$transcript_end, "|",
+    TR_GEN_141956_TRA_422911$strand, "|",
+    TR_GEN_141956_TRA_422911$cdna_coding_start, "|",
+    TR_GEN_141956_TRA_422911$cdna_coding_end
+)
+
+
+FASTA_OUTPUT<- paste0(FASTA_HEADER, "\n", TR_GEN_141956_TRA_422911$cdna, "\n")
+
+substr(FASTA_OUTPUT, 1, 400)
+
+```

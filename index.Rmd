@@ -12,255 +12,129 @@ source(file.path(Base, RDataFolder, FunctionsFile))
 
 ---
 title: "Benvenuti nel Sito di Bioinformatica"
-output: html_document
+output:
+  html_document:
+    css: styles.css
 ---
 
-<br>
 
 ## Esplorando la Bioinformatica con R
 
 Ciao sono Maurizio.
+
+<div class="image-row-container">
+  ![](me1.png){width=200px height=auto}
+  ![](me2.png){width=220px height=auto}
+</div>
+
 
 Benvenuti nel sito dedicato alla bioinformatica, dove esploreremo analisi di dati biologici complessi utilizzando il potente linguaggio di programmazione R.
 
 Questo è un sito di miei appunti di "viaggio" nel mondo della Bioinformatica per cercare di riassumere le cose più interessanti e gli esercizi utili ad esplorare questo mondo al confine tra la biologia, la genetica, la statistica e l'informatica.
 
 ---
-
-Cominciamo a familiarizzare col formato FASTA, andiamo ciè a prendere le basi nucleiche che compongono uno dei tanti trascritti di un gene del genoma umano e costruiamo un formato FASTA.
-
-### Librerie e pacchetti principali
-
-Installazione (solo la prima volta che usi questi pacchetti)
-
-```{r}
-# install.packages("BiocManager")
-# BiocManager::install("rentrez")
-# BiocManager::install("Biostrings")
-
-library(rentrez)
-library(Biostrings)
-```
-
-<br>
-
-### Connettersi al database Ensembl BioMart e scaricare il genoma umano
+Amo, cominciamo con qualcosa di base per poi capici meglio. Ho identificato alcuni principi chiave che vanno imparati a memoria come i principi della dinamica nella fisica:
 
 
-```{r,eval=FALSE}
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install("biomaRt")
-```
+<li> Tutti gli organismi cellulari (Batteri, Archea, Eucarioti come piante, animali, funghi) hanno un genoma composto esclusivamente da DNA. L'RNA serve come intermediario per esprimere le informazioni genetiche (mRNA, tRNA, rRNA).</li>
+
+<li>I virus sono un'eccezione a questa regola generale degli organismi cellulari. Essi possono avere un genoma composto da DNA oppure da RNA</li>
+
+<li>Un ORF (Open Reading Frame) è una sequenza di DNA o RNA che ha il potenziale per codificare una proteina.</li>
+
+<li>Identificare gli ORF di una sequenza è importantissimo per:</li>
+<ul>
+<li>Organismi Cellulari (es. umani, batteri):Identificare i geni che producono proteine</li>
+<li>Virus: Identifica le poche, ma cruciali, proteine che il virus deve produrre per replicarsi, assemblarsi e infettare le cellule ospiti.</li>
+</ul>
 
 
-Cerchiamo la categoria (MART) dei Database Biomart
-```{r}
-library(biomaRt)
-listMarts()
-```
+<li>Il termine CODONE significa 3 nucleotidi. Il codice genetico è universale (quasi): le triplette di nucleotidi (codoni) che specificano gli amminoacidi sono le stesse in quasi tutti gli organismi viventi.</li>
 
-Connessione al server principale di Ensembl BioMart tramite il comando useMart("ensembl"):
+<li>Ci sono 64 codoni possibili: 61 specificano amminoacidi e 3 sono codoni di stop.</li>
 
-```{r}
-A <- useMart("ensembl")
+<li>Il codone ATG (nel DNA) o AUG (nell'RNA) sono i codoni di inizio per la traduzione</li>
 
-listDatasets(A)[1:5,1:2]
+<li>La bioinformatica dipende dall'accesso a vaste raccolte di dati. I database pubblici (es. NCBI, UniProt, PDB) sono essenziali per scaricare, confrontare e analizzare sequenze di DNA, RNA </li>
 
-str(A)
+<li>L'allineamento di sequenze è la base per confrontare due o più sequenze di DNA/RNA/proteine. Permette di identificare regioni conservate (simili) che suggeriscono una funzione comune o un'origine evolutiva, e regioni divergenti (diverse) che possono spiegare variazioni funzionali o adattamenti.</li>
 
+
+
+## Dove puoi arrivare?
+
+Ti mostro alcune ricerche:
+
+Questa è una ricerca ampia che restituisce sequenze ID nucleotidiche di vari ceppi e tipi di influenza.
+
+```{r, warning=FALSE, message=FALSE}
+results <- entrez_search(db = "nuccore", term = "influenza virus", retmax = 30)
+print(results$ids)
 ```
 
 
-Greppiamo tutti i dataset che contengono la parola "sapiens"
 
-```{r}
-listDatasets(A)[grep("sapiens", listDatasets(A)$dataset), ]
+Questa ricerca è più mirata: vogliamo le sequenze ID del gene CFTR ([Gene]) specificamente dall'Homo sapiens ([Organism]) e che siano di tipo mRNA RefSeq:
+
+```{r, warning=FALSE, message=FALSE}
+
+results <- entrez_search(db = "nuccore",
+                                       term = "CFTR[Gene] AND Homo sapiens[Organism] AND NM_",
+                                       retmax = 10)
+print(results$ids)
+```
+
+Ricerca del Genoma Umano 
+
+```{r, warning=FALSE, message=FALSE}
+
+results <- entrez_search(db = "nuccore", term = "Homo sapiens[Organism] AND chromosome 1 AND complete genome AND RefSeq", retmax = 3)
+
+print(results$ids)
+```
+
+Il genoma umano è un progetto in continuo aggiornamento. Nel corso del tempo, sono state prodotte diverse versioni di riferimento dell'assemblaggio del genoma (chiamate "assemblies"). Ogni nuova versione incorpora dati di sequenziamento migliorati, corregge errori, riempie lacune e raffina le annotazioni.
+La versione più recente e consolidata denominata NC_000001.11 ma non corrisponde a nessuno dei tre ID elencati:
+
+```{r, warning=FALSE, message=FALSE}
+summary_result <- entrez_summary(db = "nuccore", id = 1519246517)
+summary_result$accession
+summary_result <- entrez_summary(db = "nuccore", id = 1519311725)
+summary_result$accession
+summary_result <- entrez_summary(db = "nuccore", id = 1519246553)
+summary_result$accession
+```
+
+Vabbè, poco male, lo cercheremo direttamente con l'Accession ID (NC_000001)
+
+
+```{r, warning=FALSE, message=FALSE}
+results <- entrez_search(db = "nuccore",term = "NC_000001[Accession]", retmax = 1)
+print(results$ids)
+```
+
+Ora che ho l'ID provo a isolare una porzione di Genoma Umano in formato fasta:
+
+```{r, warning=FALSE, message=FALSE, results='asis'}
+uid_chr1 <- "568815597"
+database_name <- "nuccore"
+
+start_position <- 10000
+end_position <- 12000
+
+
+WOW <- entrez_fetch(db = database_name,
+                                       id = uid_chr1,
+                                       rettype = "fasta",
+                                       retmode = "text",
+                                       seq_start = start_position,
+                                       seq_stop = end_position)
+
+FASTA(WOW)
 ```
 
 
-Selezioniamo il dataset specifico per il genoma umano, cioè la specie "Homo sapiens genes (GRCh38.p5)"
 
-```{r}
-B <- useDataset("hsapiens_gene_ensembl", mart = A)
-
-slotNames(B)
-```
-
-Lista degli attributi del Dataset Genoma Umano (ne riportiamo solo 5 per brevità):
-```{r}
-B@attributes[1:5,1:2]
-```
-
-<br>
-
-### Isoliamo il cromosoma 21
-
-Chiediamo la lista dei cromosomi. I primi valori, come "1", "2", ..., "22", sono i cromosomi numerici standard.
- 
-```{r}
-CHR <- getBM(
-  attributes = "chromosome_name",
-  mart = B
-)
-
-CHR[1:21,]
-
-```
-
-
-```{r}
-CHR21 <- getBM(
-  attributes = c("ensembl_gene_id"),
-  filters = "chromosome_name",
-  values = "21",
-  mart = B
-)
-
-CHR21[1:5,]
-
-dim(CHR21)
-```
-
-
-<br>
-
-### Recuperare i geni e i trascritti localizzati sul cromosoma 21
-
-Di tutto il genoma umano filtriamo il solo cromosoma 21 con i suoi attributi: "Ensembl Gene ID", "Ensembl Transcript ID", "Associated Gene Name" e "Description".
-
-
-```{r}
-CHR21 <- getBM(
-  attributes = c("ensembl_gene_id",
-    "ensembl_transcript_id",
-    "external_gene_name", # Aggiunto per recuperare l'Associated Gene Name
-    "description"         # Aggiunto per recuperare la Description
-  ),
-  filters = "chromosome_name",
-  values = "21",
-  mart = B
-)
-
-CHR21[1:5,]
-
-dim(CHR21)
-```
-
-
-Osserviamo che ogni gene può generare più di un trascritti:
-
-```{r}
-TRAS_CHR21 <- CHR21[order(CHR21$ensembl_gene_id), ][1:10,1:2]
-TRAS_CHR21
-```
-
-<br>
-
-### Prendiamo tutti i trascritti di uno stesso Gene
-
-```{r}
-TR_GEN_141956 <- getBM(
-  attributes = c("ensembl_gene_id",
-    "ensembl_transcript_id"
-  ),
-  filters = c("ensembl_gene_id", "chromosome_name"),
-  values = list(ensembl_gene_id = "ENSG00000141956", chromosome_name = "21"),
-  mart = B
-)
-
-TR_GEN_141956
-```
-
-
-<br>
-
-
-### Scaricare le sequenze nucleotidiche dei trascritti annotati nel cromosoma 21 umano del Gene ENSG00000141956 
-
-```{r}
-
-SUBSET <- TR_GEN_141956$ensembl_transcript_id #tutti i trascritti di uno stesso Gene ENSG00000141956
-
-
-SEQ_NUC_21_GEN_141956 <- getBM(
-  attributes = c(
-    "ensembl_transcript_id",
-    "cdna"
-  ),
-  filters = "ensembl_transcript_id", 
-  values = SUBSET,
-  mart = B
-)
-
-SEQ_NUC_21_GEN_141956_TRAS_477633 <-  SEQ_NUC_21_GEN_141956[1,2]
-
-SEQ_NUC_21_GEN_141956_TRAS_477633 #esempio di cdna
-```
-
-<br>
-
-### Scaricare la sequenza nucleotidica di un solo trascritto ENST00000422911 annotato nel cromosoma 21 umano del Gene ENSG00000141956 
-
-```{r}
-
-ATTRIBUTI <- c(
-  "ensembl_gene_id",
-  "external_gene_name",
-  "ensembl_transcript_id",
-  "chromosome_name",
-  "transcript_start",
-  "transcript_end",
-  "strand",
-  "cdna_coding_start", # Inizio CDS (region codificante) all'interno del cDNA
-  "cdna_coding_end",   # Fine CDS (region codificante) all'interno del cDNA
-  "cdna",              # La sequenza cDNA
-  "transcript_biotype" # Utile per capire perché alcuni coding_start/end sono NA
-)
-
-TR_GEN_141956_TRA_422911 <- getBM(
-  attributes = ATTRIBUTI,
-  filters = c("ensembl_gene_id", "chromosome_name","ensembl_transcript_id"),
-  values = list(ensembl_gene_id = "ENSG00000141956", chromosome_name = "21",ensembl_transcript_id = "ENST00000422911"),
-  mart = B
-)
-```
-
-
-<br>
-
-### Formattare e salvare la sequenza nucleotidica specifica in formato FASTA (trascritto ENST00000422911 annotato nel cromosoma 21 umano del Gene ENSG00000141956)
-
-L'output di getBM è un data frame. Per ottenere il formato FASTA, dobbiamo costruire l'intestazione per ogni sequenza. La struttura dell'intestazione desiderata è:
-
->ENSG00000010072|SPRTN|ENST00000008440|1|231338256|231352521|1|450;350;129|752;449;349
-
->ensembl_gene_id|external_gene_name|ensembl_transcript_id|chromosome_name|transcript_.....
-
-
-FASTA_OUTPUT <- paste0(fasta_HEADER, "\n", CDNA, "\n")
-
-
-```{r}
-
-FASTA_HEADER <- paste0(
-    ">", TR_GEN_141956_TRA_422911$ensembl_gene_id, "|",
-    TR_GEN_141956_TRA_422911$external_gene_name, "|",
-    TR_GEN_141956_TRA_422911$ensembl_transcript_id, "|",
-    TR_GEN_141956_TRA_422911$chromosome_name, "|",
-    TR_GEN_141956_TRA_422911$transcript_start, "|",
-    TR_GEN_141956_TRA_422911$transcript_end, "|",
-    TR_GEN_141956_TRA_422911$strand, "|",
-    TR_GEN_141956_TRA_422911$cdna_coding_start, "|",
-    TR_GEN_141956_TRA_422911$cdna_coding_end
-)
-
-
-FASTA_OUTPUT<- paste0(FASTA_HEADER, "\n", TR_GEN_141956_TRA_422911$cdna, "\n")
-
-substr(FASTA_OUTPUT, 1, 400)
-
-```
 
 
 

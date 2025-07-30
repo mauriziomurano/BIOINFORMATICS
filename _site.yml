@@ -8,6 +8,15 @@ navbar:
       href: PRIMA.html
     - text: "SECONDA"
       href: SECONDA.html
+    - text: "TERZA"
+      href: TERZA.html      
+    - text: "QUARTA"
+      href: QUARTA.html   
+    - text: "QUINTA"
+      href: QUINTA.html   
+      
+      
+      
   right:
     - icon: fa-github
       href: https://github.com/mauriziomurano/bioinformaticswebsite
