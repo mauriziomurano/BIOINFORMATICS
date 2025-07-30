@@ -1,16 +1,13 @@
 name: "bioinformaticswebsite"
 navbar:
   title: "BIOINFORMATICS"
-  # Sfondo viola per la navbar
-  bg: "#8A2BE2"       # Un tono di viola (Blue Violet)
-  text_color: "white" # Testo bianco per contrasto
   left:
     - text: "Home"
       href: index.html
-    - text: "Analisi Genomica"
-      href: analisi_genomica.html
-    - text: "Visualizzazioni Dati"
-      href: visualizzazioni_dati.html
+    - text: "PRIMA"
+      href: PRIMA.html
+    - text: "SECONDA"
+      href: SECONDA.html
   right:
     - icon: fa-github
       href: https://github.com/mauriziomurano/bioinformaticswebsite

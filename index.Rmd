@@ -1,7 +1,21 @@
+```{r,echo=FALSE, include=FALSE, warning=FALSE, message=FALSE}
+
+Base <- Sys.getenv("USERPROFILE")
+Folder <- "OneDrive - Università degli Studi di Milano/DATASET REPOSITORY"
+RDataFolder <- "OneDrive - Università degli Studi di Milano/RDATA"
+ProfileFile <- ".Rprofile"
+FunctionsFile <- "FUNZIONI.R"
+
+source(file.path(Base, RDataFolder, ProfileFile))
+source(file.path(Base, RDataFolder, FunctionsFile))
+```
+
 ---
 title: "Benvenuti nel Sito di Bioinformatica"
 output: html_document
 ---
+
+<br>
 
 ## Esplorando la Bioinformatica con R
 
@@ -14,6 +28,21 @@ Questo è un sito di miei appunti di "viaggio" nel mondo della Bioinformatica pe
 ---
 
 Cominciamo a familiarizzare col formato FASTA, andiamo ciè a prendere le basi nucleiche che compongono uno dei tanti trascritti di un gene del genoma umano e costruiamo un formato FASTA.
+
+### Librerie e pacchetti principali
+
+Installazione (solo la prima volta che usi questi pacchetti)
+
+```{r}
+# install.packages("BiocManager")
+# BiocManager::install("rentrez")
+# BiocManager::install("Biostrings")
+
+library(rentrez)
+library(Biostrings)
+```
+
+<br>
 
 ### Connettersi al database Ensembl BioMart e scaricare il genoma umano
 
@@ -63,6 +92,7 @@ Lista degli attributi del Dataset Genoma Umano (ne riportiamo solo 5 per brevit�
 B@attributes[1:5,1:2]
 ```
 
+<br>
 
 ### Isoliamo il cromosoma 21
 
@@ -93,7 +123,7 @@ dim(CHR21)
 ```
 
 
-
+<br>
 
 ### Recuperare i geni e i trascritti localizzati sul cromosoma 21
 
@@ -125,6 +155,7 @@ TRAS_CHR21 <- CHR21[order(CHR21$ensembl_gene_id), ][1:10,1:2]
 TRAS_CHR21
 ```
 
+<br>
 
 ### Prendiamo tutti i trascritti di uno stesso Gene
 
@@ -142,7 +173,7 @@ TR_GEN_141956
 ```
 
 
-
+<br>
 
 
 ### Scaricare le sequenze nucleotidiche dei trascritti annotati nel cromosoma 21 umano del Gene ENSG00000141956 
@@ -167,6 +198,7 @@ SEQ_NUC_21_GEN_141956_TRAS_477633 <-  SEQ_NUC_21_GEN_141956[1,2]
 SEQ_NUC_21_GEN_141956_TRAS_477633 #esempio di cdna
 ```
 
+<br>
 
 ### Scaricare la sequenza nucleotidica di un solo trascritto ENST00000422911 annotato nel cromosoma 21 umano del Gene ENSG00000141956 
 
@@ -195,7 +227,7 @@ TR_GEN_141956_TRA_422911 <- getBM(
 ```
 
 
-
+<br>
 
 ### Formattare e salvare la sequenza nucleotidica specifica in formato FASTA (trascritto ENST00000422911 annotato nel cromosoma 21 umano del Gene ENSG00000141956)
 

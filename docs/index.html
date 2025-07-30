@@ -248,10 +248,10 @@ $(document).ready(function () {
   <a href="index.html">Home</a>
 </li>
 <li>
-  <a href="analisi_genomica.html">Analisi Genomica</a>
+  <a href="PRIMA.html">PRIMA</a>
 </li>
 <li>
-  <a href="visualizzazioni_dati.html">Visualizzazioni Dati</a>
+  <a href="SECONDA.html">SECONDA</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -275,6 +275,7 @@ $(document).ready(function () {
 </div>
 
 
+<p><br></p>
 <div id="esplorando-la-bioinformatica-con-r" class="section level2">
 <h2>Esplorando la Bioinformatica con R</h2>
 <p>Ciao sono Maurizio.</p>
@@ -289,6 +290,17 @@ genetica, la statistica e l’informatica.</p>
 <p>Cominciamo a familiarizzare col formato FASTA, andiamo ciè a prendere
 le basi nucleiche che compongono uno dei tanti trascritti di un gene del
 genoma umano e costruiamo un formato FASTA.</p>
+<div id="librerie-e-pacchetti-principali" class="section level3">
+<h3>Librerie e pacchetti principali</h3>
+<p>Installazione (solo la prima volta che usi questi pacchetti)</p>
+<pre class="r"><code># install.packages(&quot;BiocManager&quot;)
+# BiocManager::install(&quot;rentrez&quot;)
+# BiocManager::install(&quot;Biostrings&quot;)
+
+library(rentrez)
+library(Biostrings)</code></pre>
+<p><br></p>
+</div>
 <div
 id="connettersi-al-database-ensembl-biomart-e-scaricare-il-genoma-umano"
 class="section level3">
@@ -298,8 +310,13 @@ umano</h3>
     install.packages(&quot;BiocManager&quot;)
 BiocManager::install(&quot;biomaRt&quot;)</code></pre>
 <p>Cerchiamo la categoria (MART) dei Database Biomart</p>
-<pre class="r"><code>library(biomaRt)
-listMarts()</code></pre>
+<pre class="r"><code>library(biomaRt)</code></pre>
+<pre><code>## 
+## Caricamento pacchetto: &#39;biomaRt&#39;</code></pre>
+<pre><code>## Il seguente oggetto è mascherato da &#39;package:seqinr&#39;:
+## 
+##     getSequence</code></pre>
+<pre class="r"><code>listMarts()</code></pre>
 <pre><code>##                biomart                version
 ## 1 ENSEMBL_MART_ENSEMBL      Ensembl Genes 114
 ## 2   ENSEMBL_MART_MOUSE      Mouse strains 114
@@ -345,8 +362,8 @@ listDatasets(A)[1:5,1:2]</code></pre>
 <pre class="r"><code>B &lt;- useDataset(&quot;hsapiens_gene_ensembl&quot;, mart = A)
 
 slotNames(B)</code></pre>
-<pre><code>## [1] &quot;biomart&quot;     &quot;host&quot;        &quot;vschema&quot;     &quot;version&quot;     &quot;dataset&quot;    
-## [6] &quot;filters&quot;     &quot;attributes&quot;  &quot;http_config&quot;</code></pre>
+<pre><code>## [1] &quot;biomart&quot;     &quot;host&quot;        &quot;vschema&quot;     &quot;version&quot;     &quot;dataset&quot;     &quot;filters&quot;    
+## [7] &quot;attributes&quot;  &quot;http_config&quot;</code></pre>
 <p>Lista degli attributi del Dataset Genoma Umano (ne riportiamo solo 5
 per brevità):</p>
 <pre class="r"><code>B@attributes[1:5,1:2]</code></pre>
@@ -356,6 +373,7 @@ per brevità):</p>
 ## 3         ensembl_transcript_id         Transcript stable ID
 ## 4 ensembl_transcript_id_version Transcript stable ID version
 ## 5            ensembl_peptide_id            Protein stable ID</code></pre>
+<p><br></p>
 </div>
 <div id="isoliamo-il-cromosoma-21" class="section level3">
 <h3>Isoliamo il cromosoma 21</h3>
@@ -367,8 +385,8 @@ per brevità):</p>
 )
 
 CHR[1:21,]</code></pre>
-<pre><code>##  [1] &quot;1&quot;  &quot;10&quot; &quot;11&quot; &quot;12&quot; &quot;13&quot; &quot;14&quot; &quot;15&quot; &quot;16&quot; &quot;17&quot; &quot;18&quot; &quot;19&quot; &quot;2&quot;  &quot;20&quot; &quot;21&quot; &quot;22&quot;
-## [16] &quot;3&quot;  &quot;4&quot;  &quot;5&quot;  &quot;6&quot;  &quot;7&quot;  &quot;8&quot;</code></pre>
+<pre><code>##  [1] &quot;1&quot;  &quot;10&quot; &quot;11&quot; &quot;12&quot; &quot;13&quot; &quot;14&quot; &quot;15&quot; &quot;16&quot; &quot;17&quot; &quot;18&quot; &quot;19&quot; &quot;2&quot;  &quot;20&quot; &quot;21&quot; &quot;22&quot; &quot;3&quot;  &quot;4&quot;  &quot;5&quot;  &quot;6&quot; 
+## [20] &quot;7&quot;  &quot;8&quot;</code></pre>
 <pre class="r"><code>CHR21 &lt;- getBM(
   attributes = c(&quot;ensembl_gene_id&quot;),
   filters = &quot;chromosome_name&quot;,
@@ -377,10 +395,10 @@ CHR[1:21,]</code></pre>
 )
 
 CHR21[1:5,]</code></pre>
-<pre><code>## [1] &quot;ENSG00000279493&quot; &quot;ENSG00000277117&quot; &quot;ENSG00000279687&quot; &quot;ENSG00000280071&quot;
-## [5] &quot;ENSG00000275464&quot;</code></pre>
+<pre><code>## [1] &quot;ENSG00000279493&quot; &quot;ENSG00000277117&quot; &quot;ENSG00000279687&quot; &quot;ENSG00000280071&quot; &quot;ENSG00000275464&quot;</code></pre>
 <pre class="r"><code>dim(CHR21)</code></pre>
 <pre><code>## [1] 1134    1</code></pre>
+<p><br></p>
 </div>
 <div id="recuperare-i-geni-e-i-trascritti-localizzati-sul-cromosoma-21"
 class="section level3">
@@ -428,6 +446,7 @@ TRAS_CHR21</code></pre>
 ## 583 ENSG00000141956       ENST00000269844
 ## 584 ENSG00000141956       ENST00000465955
 ## 585 ENSG00000141956       ENST00000477633</code></pre>
+<p><br></p>
 </div>
 <div id="prendiamo-tutti-i-trascritti-di-uno-stesso-gene"
 class="section level3">
@@ -457,6 +476,7 @@ TR_GEN_141956</code></pre>
 ## 12 ENSG00000141956       ENST00000491486
 ## 13 ENSG00000141956       ENST00000489661
 ## 14 ENSG00000141956       ENST00000496124</code></pre>
+<p><br></p>
 </div>
 <div
 id="scaricare-le-sequenze-nucleotidiche-dei-trascritti-annotati-nel-cromosoma-21-umano-del-gene-ensg00000141956"
@@ -480,6 +500,7 @@ SEQ_NUC_21_GEN_141956_TRAS_477633 &lt;-  SEQ_NUC_21_GEN_141956[1,2]
 
 SEQ_NUC_21_GEN_141956_TRAS_477633 #esempio di cdna</code></pre>
 <pre><code>## [1] &quot;AGGGAAGGGCAGGAGTGGTGGAGGTGGTCCCAAGGCGTGTGTGGCTTCTGGGTTCCCACCTGCATCAGCAGCACCCTGACCCCCAGCTCATGCCCTGTGCTCCTCATAGGTGCTCGCGGTGAGGATCGATGACCTGGACCACCTCCCGGAGACCACCACCATCGACGCCTCCTCCATTGGCATCGTCCAGCCTGAGCTGACTCTGGAGCAGGAGGATTTGGCCGAAGGGAAGCACGGGAAAGCTGCCAAGCGAAGTCACAAGAGAAAGCAGAAGCCAGAAGAGGAGGCGGGTGCTCCGGTGCCCGAGGACGCCACCTTCAGCGAATACTCAGAGAAAGAGACGGAGTTCACAGGCAGTGTAGGCGACGAGACCAATTCCGCAGTACAGAGCATTCAGCAGGTAGTGGTGACCCTGGGTGACCCAAATGTGACCACACCATCGAGCTCAGTCGGCTTAACCAACATC&quot;</code></pre>
+<p><br></p>
 </div>
 <div
 id="scaricare-la-sequenza-nucleotidica-di-un-solo-trascritto-enst00000422911-annotato-nel-cromosoma-21-umano-del-gene-ensg00000141956"
@@ -507,6 +528,7 @@ TR_GEN_141956_TRA_422911 &lt;- getBM(
   values = list(ensembl_gene_id = &quot;ENSG00000141956&quot;, chromosome_name = &quot;21&quot;,ensembl_transcript_id = &quot;ENST00000422911&quot;),
   mart = B
 )</code></pre>
+<p><br></p>
 </div>
 <div
 id="formattare-e-salvare-la-sequenza-nucleotidica-specifica-in-formato-fasta-trascritto-enst00000422911-annotato-nel-cromosoma-21-umano-del-gene-ensg00000141956"

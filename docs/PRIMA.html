@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Analisi Genomica con R</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">BIOINFORMATICS</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="PRIMA.html">PRIMA</a>
+</li>
+<li>
+  <a href="SECONDA.html">SECONDA</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/mauriziomurano/bioinformaticswebsite">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Analisi Genomica con R</h1>
+
+</div>
+
+
+<div id="tabella-dei-codoni" class="section level1">
+<h1>Tabella dei codoni</h1>
+<p>Un codone è una tripletta di basi nucleiche.</p>
+<p>Un gene che codifica le proteine inizia con un codone “ATG”, seguita
+da un numero intero di codoni che codificano gli aminoacidi, e termina
+con un codone “TGA”, “TAA” o “TAG”.</p>
+<p><img src="Tablecode.png" /></p>
+<p>Si riconosce facilmente il codone di inizio (Met) e quelli di fine
+(Stp)</p>
+<div id="ricerca-dei-codoni-di-inizio-e-fine-in-una-sequenza-di-dna"
+class="section level2">
+<h2>Ricerca dei codoni di inizio e fine in una sequenza di DNA</h2>
+<pre class="r"><code>accession_id &lt;- &quot;NC_001477&quot;
+database_name &lt;- &quot;nuccore&quot;
+
+FASTA_1 &lt;- entrez_fetch(db = database_name, id = accession_id, rettype = &quot;fasta&quot;, retmode = &quot;text&quot;)</code></pre>
+<p>Utiliziamo la mia Super-Funzione FASTA per visualizzare il contenuto
+del fetch:</p>
+<pre class="r"><code>FASTA(FASTA_1,500)</code></pre>
+<style>
+      .fasta-container-wrapper {
+          margin-top: 20px;
+          border: 1px solid #ddd;
+          padding: 15px;
+          border-radius: 5px;
+          background-color: #fcfcfc;
+      }
+      .fasta-output-header {
+          font-family: sans-serif;
+          white-space: pre-wrap;
+          margin-bottom: 10px;
+      }
+      .fasta-sequence-pre {
+        font-family: 'Courier New', Courier, monospace;
+        white-space: pre;
+        word-wrap: normal;
+        font-size: 14px;
+        line-height: 1.2;
+        background-color: white; 
+        color: black; 
+        padding: 15px;
+        border-radius: 8px;
+        overflow-x: auto;
+        tab-size: 4;
+        -moz-tab-size: 4;
+      }
+      .line-number-html {
+        color: #888;
+        display: inline-block;
+        width: 70px;
+        text-align: right;
+        margin-right: 10px;
+      }
+    </style>
+<div class="fasta-container-wrapper">
+<div class="fasta-output-header">
+<p>Nota: I codoni di START (ATG) sono in <span
+style="color:red;">ROSSO</span>, i codoni di STOP (TAA, TAG, TGA) sono
+in <span style="color:blue;">BLU</span>.</p>
+</div>
+<pre class='fasta-sequence-pre'>
+<span class='line-number-html'>      </span>1 AGTTGT<span style='color:blue;'>T</span><span style='color:blue;'>A</span><span style='color:blue;'>G</span>TCTACGTGGACCGACAAGAACAGTTTCGAATCGGAAGCTTGCT<span style='color:blue;'>T</span><span style='color:blue;'>A</span><span style='color:blue;'>A</span>CG<span style='color:blue;'>T</span><span style='color:blue;'>A</span><span style='color:blue;'>G</span>
+<span class='line-number-html'>     </span>61 TTC<span style='color:blue;'>T</span><span style='color:blue;'>A</span><span style='color:blue;'>A</span>CAGTTTTTTAT<span style='color:blue;'>T</span><span style='color:blue;'>A</span><span style='color:blue;'>G</span>AGAGCAGATCTC<span style='color:blue;'>T</span><span style='color:blue;'>G</span><span style='color:red;'>A</span><span style='color:red;'>T</span><span style='color:red;'>G</span><span style='color:blue;'>A</span>ACAACCAACGGAAAAAGACGGG
+<span class='line-number-html'>    </span>121 TCGACCGTCTTTCAAT<span style='color:red;'>A</span><span style='color:red;'>T</span><span style='color:red;'>G</span>C<span style='color:blue;'>T</span><span style='color:blue;'>G</span><span style='color:blue;'>A</span>AACGCGCGAGAAACCGCGTGTCAACTGTTTCACAGTT
+<span class='line-number-html'>    </span>181 GGCGAAGAGATTCTCAAAAGGATTGCTTTCAGGCCAAGGACCC<span style='color:red;'>A</span><span style='color:red;'>T</span><span style='color:red;'>G</span><span style='color:blue;'>A</span>AATTGG<span style='color:blue;'>T</span><span style='color:blue;'>G</span><span style='color:red;'>A</span><span style='color:red;'>T</span><span style='color:red;'>G</span>GC
+<span class='line-number-html'>    </span>241 TTTTA<span style='color:blue;'>T</span><span style='color:blue;'>A</span><span style='color:blue;'>G</span>CATTCC<span style='color:blue;'>T</span><span style='color:blue;'>A</span><span style='color:blue;'>A</span>GATTTC<span style='color:blue;'>T</span><span style='color:blue;'>A</span><span style='color:blue;'>G</span>CCATACCTCCAACAGCAGGAATTTTGGC<span style='color:blue;'>T</span><span style='color:blue;'>A</span><span style='color:blue;'>G</span><span style='color:red;'>A</span><span style='color:red;'>T</span><span style='color:red;'>G</span>
+<span class='line-number-html'>    </span>301 GGGCTCATTCAAGAAGA<span style='color:red;'>A</span><span style='color:red;'>T</span><span style='color:red;'>G</span>GAGCGATCAAAGTGTTACGGGGTTTCAAGAAAGAAATCTC
+<span class='line-number-html'>    </span>361 AAAC<span style='color:red;'>A</span><span style='color:red;'>T</span><span style='color:red;'>G</span>T<span style='color:blue;'>T</span><span style='color:blue;'>G</span><span style='color:blue;'>A</span>ACA<span style='color:blue;'>T</span><span style='color:blue;'>A</span><span style='color:red;'>A</span><span style='color:red;'>T</span><span style='color:red;'>G</span><span style='color:blue;'>A</span>ACAGGAGGAAAAGATCTG<span style='color:blue;'>T</span><span style='color:blue;'>G</span><span style='color:blue;'>A</span>CC<span style='color:red;'>A</span><span style='color:red;'>T</span><span style='color:red;'>G</span>CTCCTC<span style='color:red;'>A</span><span style='color:red;'>T</span><span style='color:red;'>G</span>CTGCT
+<span class='line-number-html'>    </span>421 GCCCACAGCCCTGGCGTTCCATC<span style='color:blue;'>T</span><span style='color:blue;'>G</span><span style='color:blue;'>A</span>CCACCCGAGGGGGAGAGCCGCAC<span style='color:red;'>A</span><span style='color:red;'>T</span><span style='color:red;'>G</span><span style='color:blue;'>A</span><span style='color:blue;'>T</span><span style='color:blue;'>A</span><span style='color:blue;'>G</span>T<span style='color:blue;'>T</span><span style='color:blue;'>A</span><span style='color:blue;'>G</span>
+<span class='line-number-html'>    </span>481 CAAGCAGGAAAGAGGAAAAT
+
+
+</pre>
+</div>
+<p><br></p>
+<p>Ora utiliziamo la mia Super Funzione START_STOP per evidenziare le
+posizioni degli start e degli stop</p>
+<pre class="r"><code>START_STOP(FASTA_1,1500)</code></pre>
+<style>
+      .start-stop-output-container {
+        font-family: 'Courier New', Courier, monospace;
+        background-color: white;
+        color: black;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        margin-top: 20px;
+        overflow-x: auto;
+      }
+      .start-stop-pre {
+        white-space: pre;
+        word-wrap: normal;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+    </style>
+<div class="start-stop-output-container">
+<pre class='start-stop-pre'>
+Positions: <span style='color:blue;'>7</span>   <span style='color:blue;'>53</span>   <span style='color:blue;'>58</span>   <span style='color:blue;'>64</span>   <span style='color:blue;'>78</span>   <span style='color:blue;'>93</span>   <span style='color:red;'>95</span>   <span style='color:blue;'>96</span>   <span style='color:red;'>137</span>   <span style='color:blue;'>141</span>   <span style='color:red;'>224</span>   <span style='color:blue;'>225</span>   <span style='color:blue;'>234</span>   <span style='color:red;'>236</span>   <span style='color:blue;'>246</span>   <span style='color:blue;'>255</span>   <span style='color:blue;'>264</span>   <span style='color:blue;'>295</span>   <span style='color:red;'>298</span>   <span style='color:red;'>318</span>   <span style='color:red;'>365</span>   <span style='color:blue;'>369</span>   <span style='color:blue;'>375</span>   <span style='color:red;'>377</span>   <span style='color:blue;'>378</span>   <span style='color:blue;'>399</span>   <span style='color:red;'>404</span>   <span style='color:red;'>413</span>   <span style='color:blue;'>444</span>   <span style='color:red;'>470</span>   <span style='color:blue;'>471</span>   <span style='color:blue;'>474</span>   <span style='color:blue;'>478</span>   <span style='color:blue;'>511</span>   <span style='color:red;'>533</span>   <span style='color:red;'>551</span>   <span style='color:red;'>568</span>   <span style='color:blue;'>571</span>   <span style='color:red;'>581</span>   <span style='color:blue;'>582</span>   <span style='color:red;'>592</span>   <span style='color:blue;'>607</span>   <span style='color:red;'>621</span>   <span style='color:blue;'>622</span>   <span style='color:blue;'>628</span>   <span style='color:red;'>642</span>   <span style='color:red;'>655</span>   <span style='color:blue;'>660</span>   <span style='color:red;'>666</span>   <span style='color:red;'>673</span>   <span style='color:blue;'>688</span>   <span style='color:blue;'>732</span>   <span style='color:blue;'>744</span>   <span style='color:red;'>767</span>   <span style='color:blue;'>775</span>   <span style='color:blue;'>819</span>   <span style='color:blue;'>840</span>   <span style='color:blue;'>843</span>   <span style='color:blue;'>855</span>   <span style='color:red;'>861</span>   <span style='color:blue;'>867</span>   <span style='color:blue;'>909</span>   <span style='color:red;'>911</span>   <span style='color:blue;'>918</span>   <span style='color:red;'>929</span>   <span style='color:red;'>935</span>   <span style='color:blue;'>951</span>   <span style='color:red;'>999</span>   <span style='color:red;'>1014</span>   <span style='color:red;'>1034</span>   <span style='color:blue;'>1063</span>   <span style='color:blue;'>1071</span>   <span style='color:blue;'>1117</span>   <span style='color:blue;'>1123</span>   <span style='color:red;'>1153</span>   <span style='color:red;'>1242</span>   <span style='color:blue;'>1267</span>   <span style='color:blue;'>1272</span>   <span style='color:blue;'>1275</span>   <span style='color:blue;'>1285</span>   <span style='color:blue;'>1291</span>   <span style='color:blue;'>1299</span>   <span style='color:blue;'>1320</span>   <span style='color:red;'>1329</span>   <span style='color:blue;'>1330</span>   <span style='color:blue;'>1338</span>   <span style='color:blue;'>1350</span>   <span style='color:blue;'>1353</span>   <span style='color:red;'>1392</span>   <span style='color:blue;'>1393</span>   <span style='color:red;'>1407</span>   <span style='color:blue;'>1425</span>   <span style='color:blue;'>1458</span>   <span style='color:blue;'>1476</span>   <span style='color:blue;'>1495</span>
+Types:     <span style='color:blue;'>TAG</span>   <span style='color:blue;'>TAA</span>   <span style='color:blue;'>TAG</span>   <span style='color:blue;'>TAA</span>   <span style='color:blue;'>TAG</span>   <span style='color:blue;'>TGA</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:blue;'>TGA</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TAG</span>   <span style='color:blue;'>TAA</span>   <span style='color:blue;'>TAG</span>   <span style='color:blue;'>TAG</span>   <span style='color:red;'>ATG</span>   <span style='color:red;'>ATG</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:blue;'>TAA</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:blue;'>TGA</span>   <span style='color:red;'>ATG</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:blue;'>TAG</span>   <span style='color:blue;'>TAG</span>   <span style='color:blue;'>TAA</span>   <span style='color:red;'>ATG</span>   <span style='color:red;'>ATG</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:blue;'>TGA</span>   <span style='color:red;'>ATG</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:red;'>ATG</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:blue;'>TAG</span>   <span style='color:blue;'>TAG</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:blue;'>TGA</span>   <span style='color:blue;'>TGA</span>   <span style='color:blue;'>TAG</span>   <span style='color:blue;'>TAG</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TAG</span>   <span style='color:blue;'>TGA</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TAA</span>   <span style='color:red;'>ATG</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TAG</span>   <span style='color:red;'>ATG</span>   <span style='color:red;'>ATG</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:blue;'>TGA</span>   <span style='color:blue;'>TGA</span>   <span style='color:blue;'>TAA</span>   <span style='color:red;'>ATG</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TAG</span>   <span style='color:blue;'>TAA</span>   <span style='color:blue;'>TAA</span>   <span style='color:blue;'>TAA</span>   <span style='color:blue;'>TAA</span>   <span style='color:blue;'>TGA</span>   <span style='color:blue;'>TAG</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:blue;'>TAA</span>   <span style='color:blue;'>TGA</span>   <span style='color:blue;'>TAG</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TGA</span>   <span style='color:red;'>ATG</span>   <span style='color:blue;'>TAA</span>   <span style='color:blue;'>TGA</span>   <span style='color:blue;'>TAA</span>   <span style='color:blue;'>TAG</span>
+</pre>
+</div>
+<p><br></p>
+<p>I codoni di inizio e di stop in una sequenza di DNA possono risiedere
+in uno dei tre possibili frame di lettura (reading frame)</p>
+<p>Per capirci, immagina la frase: ATGCCAGTC</p>
+<ol style="list-style-type: decimal">
+<li><p>Frame di Lettura +1 (Parti da subito) Frase: A T G C C A G T C
+Lettura: ATG (prima parola) CCA (seconda parola) GTC (terza
+parola)</p></li>
+<li><p>Frame di Lettura +2 (Parti dalla seconda lettera) Frase: A T G C
+C A G T C Lettura: TGC (prima parola) CAG (seconda parola) TC (resta
+solo ‘TC’, non è una parola completa di tre lettere, la
+scartiamo)</p></li>
+<li><p>Frame di Lettura +3 (Parti dalla terza lettera) Frase: A T G C C
+A G T C Lettura: GCC (prima parola) AGT (seconda parola) C (resta solo
+‘C’, non è una parola completa di tre lettere, la scartiamo)</p></li>
+</ol>
+<p><br></p>
+</div>
+<div id="orf-e-ricerca-del-gene" class="section level2">
+<h2>ORF e ricerca del GENE</h2>
+<p>Quando troviamo un pezzo di DNA che inizia con un segnale di start e
+finisce con uno di stop, e tutto è allineato correttamente nello stesso
+modo di lettura, lo chiamiamo ‘Open Reading Frame’ (ORF). Un ORF è un
+buon indizio che lì c’è un gene.</p>
+<pre class="r"><code>ORF(FASTA_1,500)</code></pre>
+<p><img src="PRIMA_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre><code>## 
+## --- Open Reading Frames (ORF) identificati ---
+## Numero totale di ORF trovati: 2
+## 
+##   ORF 1:
+##     Inizio: 298
+##     Fine: 480
+##     Lunghezza: 183 bp
+##     Frame di Lettura: +1
+## ---
+##   ORF 2:
+##     Inizio: 318
+##     Fine: 371
+##     Lunghezza: 54 bp
+##     Frame di Lettura: +3
+## ---</code></pre>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
