@@ -36,7 +36,7 @@ Questo è un sito di miei appunti di "viaggio" nel mondo della Bioinformatica pe
 Cominciamo con qualcosa di base per poi capici meglio. Ho identificato alcuni principi chiave che costituiscono la base per capirci in questo lavoro. Ma proprio la base, quindi cercate di memorizzarli.
 
 
-<li> Tutti gli organismi cellulari (Batteri, Archea, Eucarioti come piante, animali, funghi) hanno un genoma composto esclusivamente da DNA. L'RNA (trascritto) serve come intermediario per esprimere le informazioni genetiche (mRNA, tRNA, rRNA).</li>
+<li> Tutti gli organismi cellulari (Procarioti ed Eucarioti) hanno un genoma composto esclusivamente da DNA. L'RNA (trascritto) serve come intermediario per esprimere le informazioni genetiche (mRNA, tRNA, rRNA).</li>
 
 <li>I virus sono un'eccezione a questa regola generale degli organismi cellulari. Essi possono avere un genoma composto da DNA oppure da RNA</li>
 
@@ -64,9 +64,9 @@ Cominciamo con qualcosa di base per poi capici meglio. Ho identificato alcuni pr
 
 Il mondo microscopico che ci circonda è popolato da diverse entità biologiche, tra cui spiccano i procarioti, gli eucarioti e i virus. I procarioti sono le forme di vita più semplici e antiche: cellule prive di nucleo definito e di organelli interni, come i batteri. Al contrario, gli eucarioti rappresentano organismi più complessi, le cui cellule possiedono un vero nucleo che racchiude il DNA e numerosi organelli specializzati, caratteristica di piante, animali, funghi e protisti. Infine, i virus non sono considerati veri esseri viventi: privi di una propria autonomia metabolica, sono parassiti obbligati che devono infettare una cellula ospite (sia essa procariotica o eucariotica) per potersi replicare, sfruttandone il macchinario biologico.
 
-Nei procarioti, i geni sono generalmente "continui"
+Nei procarioti (es. batteri), i geni sono generalmente "continui"
 
-Negli eucarioti, i geni sono spesso interrotti. Gli esoni sono le "parti significative" del gene. Le parti cioè depurate dalle interruzioni.
+Negli eucarioti (es. l'uomo), i geni sono spesso interrotti. Gli esoni sono le "parti significative" del gene. Le parti cioè depurate dalle interruzioni.
 
 Non tutti gli esoni sono "codificanti". Un esone codificante (CDS) è quella parte dell'esone che contiene le istruzioni per la sintesi della proteina.
 
