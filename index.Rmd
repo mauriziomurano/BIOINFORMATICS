@@ -36,7 +36,7 @@ Questo è un sito di miei appunti di "viaggio" nel mondo della Bioinformatica pe
 Amo, cominciamo con qualcosa di base per poi capici meglio. Ho identificato alcuni principi chiave che vanno imparati a memoria come i principi della dinamica nella fisica:
 
 
-<li> Tutti gli organismi cellulari (Batteri, Archea, Eucarioti come piante, animali, funghi) hanno un genoma composto esclusivamente da DNA. L'RNA serve come intermediario per esprimere le informazioni genetiche (mRNA, tRNA, rRNA).</li>
+<li> Tutti gli organismi cellulari (Batteri, Archea, Eucarioti come piante, animali, funghi) hanno un genoma composto esclusivamente da DNA. L'RNA (trascritto) serve come intermediario per esprimere le informazioni genetiche (mRNA, tRNA, rRNA).</li>
 
 <li>I virus sono un'eccezione a questa regola generale degli organismi cellulari. Essi possono avere un genoma composto da DNA oppure da RNA</li>
 
@@ -61,94 +61,23 @@ Amo, cominciamo con qualcosa di base per poi capici meglio. Ho identificato alcu
 
 <BR>
 
-<table style="width:100%; border-collapse: collapse;">
-  <thead>
-    <tr style="background-color:#f2f2f2;">
-      <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Caratteristica</th>
-      <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Procarioti</th>
-      <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Eucarioti</th>
-      <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Virus</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="padding: 8px; border: 1px solid #ddd;">**Organizzazione**</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Unicellulari</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Unicellulari o Multicellulari</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Non cellulare</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border: 1px solid #ddd;">**Natura**</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Organismi viventi</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Organismi viventi</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Entità biologiche al confine tra vivo e non vivo (parassiti obbligati)</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border: 1px solid #ddd;">**Nucleo Definito**</td>
-      <td style="padding: 8px; border: 1px solid #ddd;"><b>NO</b> (DNA nel nucleoide)</td>
-      <td style="padding: 8px; border: 1px solid #ddd;"><b>SÌ</b> (DNA racchiuso da membrana nucleare)</td>
-      <td style="padding: 8px; border: 1px solid #ddd;"><b>NO</b> (non hanno nucleo)</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border: 1px solid #ddd;">**Organelli Membranosi**</td>
-      <td style="padding: 8px; border: 1px solid #ddd;"><b>NO</b></td>
-      <td style="padding: 8px; border: 1px solid #ddd;"><b>SÌ</b> (Mitocondri, RE, Golgi, ecc.)</td>
-      <td style="padding: 8px; border: 1px solid #ddd;"><b>NO</b> (non hanno organelli)</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border: 1px solid #ddd;">**Materiale Genetico**</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">DNA (principalmente un cromosoma circolare singolo); plasmidi</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">DNA (cromosomi lineari multipli); DNA in mitocondri/cloroplasti</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">DNA o RNA (a singolo o doppio filamento, lineare o circolare)</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border: 1px solid #ddd;">**Istoni (DNA)**</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Assenti (o proteine iston-simili)</td>
-      <td style="padding: 8px; border: 1px solid #ddd;"><b>SÌ</b></td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Assenti (o proteine virali associate al genoma)</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border: 1px solid #ddd;">**Ribosomi**</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Presenti (70S)</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Presenti (80S nel citoplasma; 70S in mitocondri/cloroplasti)</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Assenti (usano quelli della cellula ospite)</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border: 1px solid #ddd;">**Parete Cellulare**</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Presente (es. peptidoglicano nei batteri)</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Presente (piante, funghi) o Assente (animali)</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Assente (hanno un capside proteico e/o un involucro lipidico)</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border: 1px solid #ddd;">**Metabolismo**</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Proprio (completo)</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Proprio (completo)</td>
-      <td style="padding: 8px; border: 1px solid #ddd;"><b>Assente</b> (dipendono dalla cellula ospite)</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border: 1px solid #ddd;">**Riproduzione**</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Scissione binaria (asessuata)</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Mitosi e Meiosi (sessuata e asessuata)</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Replicazione all'interno della cellula ospite (assemblaggio di nuove particelle virali)</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border: 1px solid #ddd;">**Dimensioni**</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Piccole (0.1-5 µm)</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Grandi (10-100 µm)</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Molto piccoli (20-400 nm)</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border: 1px solid #ddd;">**Esempi**</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Batteri, Archea</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Piante, Animali (Umani), Funghi, Protisti</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">Virus influenzali, HIV, Batteriofagi, SARS-CoV-2</td>
-    </tr>
-  </tbody>
-</table>
+Procarioti	Eucarioti	Virus
+
 
 <BR>
 
+Altre cose fondamentali per capirsi:
 
+L'RNA polimerasi (che è un enzima) legge un filamento specifico dei due che compongono la doppia elica del DNA: legge il filamento detto "stampo".
+
+l'RNA polimerasi sintetizza poi una molecola mRNA (RNA messaggero) detto "trascritto"
+
+mRNA (RNA messaggero): Questo è il trascritto originale del gene, prodotto tramite trascrizione dal DNA nel nucleo. L'mRNA è una molecola che contiene sequenze complementari al filamento stampo e contiene Uracile (U) al posto della Timina (T). 
+
+cDNA (complementary DNA): Il cDNA è una copia del mRNA, ma in formato DNA. Viene sintetizzato in laboratorio (o in silico, cioè in un database) a partire da un mRNA maturo attraverso un processo chiamato trascrizione inversa. Il cDNA è contiene Timina (T) e non Uracile (U). NB: Le sequenze che si scaricano dei trascritti con getBM(attributes = c("ensembl_transcript_id", "cdna"), ...) sono sequenze di cDNA (complementary DNA).
+
+<BR>
+     
 ## Dove puoi arrivare?
 
 Ti mostro alcune ricerche:
