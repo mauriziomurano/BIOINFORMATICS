@@ -23,8 +23,8 @@ output:
 Ciao sono Maurizio.
 
 <div class="image-row-container">
-  ![](me1.png){width=200px height=auto}
-  ![](me2.png){width=220px height=auto}
+  ![](me1.png){width=180px height=auto}
+  ![](me2.png){width=200px height=auto}
 </div>
 
 
@@ -33,7 +33,7 @@ Benvenuti nel sito dedicato alla bioinformatica, dove esploreremo analisi di dat
 Questo è un sito di miei appunti di "viaggio" nel mondo della Bioinformatica per cercare di riassumere le cose più interessanti e gli esercizi utili ad esplorare questo mondo al confine tra la biologia, la genetica, la statistica e l'informatica.
 
 ---
-Amo, cominciamo con qualcosa di base per poi capici meglio. Ho identificato alcuni principi chiave che vanno imparati a memoria come i principi della dinamica nella fisica:
+Cominciamo con qualcosa di base per poi capici meglio. Ho identificato alcuni principi chiave che costituiscono la base per capirci in questo lavoro. Ma proprio la base, quindi cercate di memorizzarli.
 
 
 <li> Tutti gli organismi cellulari (Batteri, Archea, Eucarioti come piante, animali, funghi) hanno un genoma composto esclusivamente da DNA. L'RNA (trascritto) serve come intermediario per esprimere le informazioni genetiche (mRNA, tRNA, rRNA).</li>
@@ -59,10 +59,20 @@ Amo, cominciamo con qualcosa di base per poi capici meglio. Ho identificato alcu
 
 <li>L'allineamento di sequenze è la base per confrontare due o più sequenze di DNA/RNA/proteine. Permette di identificare regioni conservate (simili) che suggeriscono una funzione comune o un'origine evolutiva, e regioni divergenti (diverse) che possono spiegare variazioni funzionali o adattamenti.</li>
 
+
 <BR>
 
-Procarioti	Eucarioti	Virus
+Il mondo microscopico che ci circonda è popolato da diverse entità biologiche, tra cui spiccano i procarioti, gli eucarioti e i virus. I procarioti sono le forme di vita più semplici e antiche: cellule prive di nucleo definito e di organelli interni, come i batteri. Al contrario, gli eucarioti rappresentano organismi più complessi, le cui cellule possiedono un vero nucleo che racchiude il DNA e numerosi organelli specializzati, caratteristica di piante, animali, funghi e protisti. Infine, i virus non sono considerati veri esseri viventi: privi di una propria autonomia metabolica, sono parassiti obbligati che devono infettare una cellula ospite (sia essa procariotica o eucariotica) per potersi replicare, sfruttandone il macchinario biologico.
 
+Nei procarioti, i geni sono generalmente "continui"
+
+Negli eucarioti, i geni sono spesso interrotti. Gli esoni sono le "parti significative" del gene. Le parti cioè depurate dalle interruzioni.
+
+Non tutti gli esoni sono "codificanti". Un esone codificante (CDS) è quella parte dell'esone che contiene le istruzioni per la sintesi della proteina.
+
+Questa sequenza di numeri separati da punto e virgola rappresenta le posizioni di inizio (sul cDNA) di ciascun esone codificante (CDS) 
+
+I numeri intervvalati dal punto e virgola che troviamo nelle diciture dei codici (es: cdna_coding_start: 2035;2926;1397;3007;...) rappresentano le posizioni di inizio (sul cDNA) di ciascun esone codificante (CDS) per questo trascritto.
 
 <BR>
 

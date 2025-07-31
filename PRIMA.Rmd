@@ -47,7 +47,7 @@ FASTA(FASTA_1,500)
 Ora utiliziamo la mia Super Funzione START_STOP per evidenziare le posizioni degli start e degli stop
 
 ```{r, warning=FALSE, message=FALSE, results='asis'}
-START_STOP(FASTA_1,1500)
+START_STOP(FASTA_1,500)
 ```
 
 <br>
@@ -88,7 +88,7 @@ Quando troviamo un pezzo di DNA che inizia con un segnale di start e finisce con
 ORF(FASTA_1,500)
 ```
 
-
+Notare che le posizioni di Start and Stop non coincidono totalmente con quelle evidenziate dalla funzione START_STOP perchè questa a differenza della funzione ORF non considerava i tre diversi frame di lettura.
 
 
 
