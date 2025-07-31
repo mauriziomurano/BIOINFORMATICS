@@ -254,13 +254,13 @@ $(document).ready(function () {
   <a href="SECONDA.html">SECONDA</a>
 </li>
 <li>
-  <a href="TERZA.html">TERZA</a>
+  <a href="ALLINEAMENTO.html">ALLINEAMENTO</a>
 </li>
 <li>
   <a href="QUARTA.html">QUARTA</a>
 </li>
 <li>
-  <a href="QUINTA.html">QUINTA</a>
+  <a href="BANCHE.html">BANCHE</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -293,9 +293,12 @@ genoma umano e costruiamo un formato FASTA.</p>
 <pre class="r"><code># install.packages(&quot;BiocManager&quot;)
 # BiocManager::install(&quot;rentrez&quot;)
 # BiocManager::install(&quot;Biostrings&quot;)
+# BiocManager::install(&quot;biomaRt&quot;)
+# BiocManager::install(&quot;msa&quot;)
 
 library(rentrez)
-library(Biostrings)</code></pre>
+library(Biostrings)
+library(msa)</code></pre>
 <p><br></p>
 </div>
 <div
@@ -303,7 +306,6 @@ id="connettersi-al-database-ensembl-biomart-e-scaricare-il-genoma-umano"
 class="section level3">
 <h3>Connettersi al database <span style="font-weight: 400;">Ensembl
 BioMart</span> e scaricare il genoma umano</h3>
-<pre class="r"><code>#BiocManager::install(&quot;biomaRt&quot;)</code></pre>
 <p>Cerchiamo la categoria (MART) dei Database Biomart</p>
 <pre class="r"><code>library(biomaRt)
 listMarts()</code></pre>

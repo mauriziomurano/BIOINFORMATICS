@@ -25,19 +25,17 @@ Installazione (solo la prima volta che usi questi pacchetti)
 # install.packages("BiocManager")
 # BiocManager::install("rentrez")
 # BiocManager::install("Biostrings")
+# BiocManager::install("biomaRt")
+# BiocManager::install("msa")
 
 library(rentrez)
 library(Biostrings)
+library(msa)
 ```
 
 <br>
 
 ### Connettersi al database <span style="font-weight: 400;">Ensembl BioMart</span> e scaricare il genoma umano
-
-```{r,eval=FALSE}
-#BiocManager::install("biomaRt")
-```
-
 
 Cerchiamo la categoria (MART) dei Database Biomart
 ```{r, warning=FALSE, message=FALSE}

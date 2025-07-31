@@ -8,12 +8,12 @@ navbar:
       href: PRIMA.html
     - text: "SECONDA"
       href: SECONDA.html
-    - text: "TERZA"
-      href: TERZA.html      
+    - text: "ALLINEAMENTO"
+      href: ALLINEAMENTO.html      
     - text: "QUARTA"
       href: QUARTA.html   
-    - text: "QUINTA"
-      href: QUINTA.html   
+    - text: "BANCHE"
+      href: BANCHE.html   
       
       
       

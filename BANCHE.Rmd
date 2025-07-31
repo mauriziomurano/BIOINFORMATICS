@@ -1,0 +1,43 @@
+```{r,echo=FALSE, include=FALSE, warning=FALSE, message=FALSE}
+
+Base <- Sys.getenv("USERPROFILE")
+Folder <- "OneDrive - Università degli Studi di Milano/DATASET REPOSITORY"
+RDataFolder <- "OneDrive - Università degli Studi di Milano/RDATA"
+ProfileFile <- ".Rprofile"
+FunctionsFile <- "FUNZIONI.R"
+
+source(file.path(Base, RDataFolder, ProfileFile))
+source(file.path(Base, RDataFolder, FunctionsFile))
+```
+
+---
+title: "BANCHE DATI"
+output:
+  html_document:
+    css: styles.css
+---
+
+
+NG_ : Indica la sequenza di un intero Gene
+NC_ Indica la sequenza di un intero cromosoma
+
+
+
+## NCBI
+
+```{r echo=FALSE}
+
+Sys.setenv("VDB_RETREZ_EMAIL" = "tua.email@esempio.com") # CAMBIA QUI CON LA TUA EMAIL
+
+# Recupero sequenza DNA Umano (Homo sapiens) appartenente al gene HBB (beta-emoglobina), presente nel database RefSeq
+id_human <- entrez_search(db="nuccore", term="HBB[gene] AND Homo sapiens[Organism] AND RefSeq[filter]", retmax=1)$ids[1]
+fasta_human_content <- entrez_fetch(db="nuccore", id=id_human, rettype="fasta", retmode="text") # FORMATO Biostrings
+temp_file_human <- tempfile(fileext = ".fasta") # Crea un file FASTA temporaneo
+write(fasta_human_content, file = temp_file_human) # Scrivi il contenuto FASTA su un file temporaneo per leggerlo correttamente come stringa
+seq_human <- readDNAStringSet(temp_file_human) # FORMATO Biostrings
+unlink(temp_file_human)  # Rimuovi il file temporaneo
+names(seq_human) <- "Homo sapiens"
+
+```
+
+

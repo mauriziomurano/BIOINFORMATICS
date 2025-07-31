@@ -1,0 +1,103 @@
+```{r,echo=FALSE, include=FALSE, warning=FALSE, message=FALSE}
+
+Base <- Sys.getenv("USERPROFILE")
+Folder <- "OneDrive - Università degli Studi di Milano/DATASET REPOSITORY"
+RDataFolder <- "OneDrive - Università degli Studi di Milano/RDATA"
+ProfileFile <- ".Rprofile"
+FunctionsFile <- "FUNZIONI.R"
+
+source(file.path(Base, RDataFolder, ProfileFile))
+source(file.path(Base, RDataFolder, FunctionsFile))
+```
+
+---
+title: "ALLINEAMENTO"
+output:
+  html_document:
+    css: styles.css
+---
+
+```{r echo=FALSE}
+
+# --- Recupero sequenza DNA Umano (Homo sapiens) ---
+
+fasta_human_content <- entrez_fetch(db="nuccore", id="NM_000518.5", rettype="fasta", retmode="text")
+temp_file_human <- tempfile(fileext = ".fasta")
+write(fasta_human_content, file = temp_file_human)
+seq_human <- readDNAStringSet(temp_file_human) # LEGGE DAL FILE TEMPORANEO
+unlink(temp_file_human) # Rimuovi il file temporaneo
+names(seq_human) <- "Homo sapiens"
+# Estrae solo la regione codificante (CDS)  (51-503) 
+seq_human <- subseq(seq_human, start = 51, end = 503)
+
+
+# --- Recupero sequenza DNA Scimmia (Pan troglodytes) ---
+
+fasta_chimp_content <- entrez_fetch(db="nuccore", id="NM_001009139.1", rettype="fasta", retmode="text")
+temp_file_chimp <- tempfile(fileext = ".fasta")
+write(fasta_chimp_content, file = temp_file_chimp)
+seq_chimp <- readDNAStringSet(temp_file_chimp) # LEGGE DAL FILE TEMPORANEO
+unlink(temp_file_chimp) # Rimuovi il file temporaneo
+names(seq_chimp) <- "Pan troglodytes"
+# Estrae solo la regione codificante (CDS)  (50-502)
+seq_chimp <- subseq(seq_chimp, start = 50, end = 502)
+
+
+# --- Recupero sequenza DNA Topo (Mus musculus) ---
+
+fasta_mouse_content <- entrez_fetch(db="nuccore", id="NM_001002361.2", rettype="fasta", retmode="text")
+temp_file_mouse <- tempfile(fileext = ".fasta")
+write(fasta_mouse_content, file = temp_file_mouse)
+seq_mouse <- readDNAStringSet(temp_file_mouse) # LEGGE DAL FILE TEMPORANEO
+unlink(temp_file_mouse) # Rimuovi il file temporaneo
+names(seq_mouse) <- "Mus musculus"
+# Estrae solo la regione codificante (CDS) (88-552)
+seq_mouse <- subseq(seq_mouse, start = 88, end = 552)
+
+
+# Combina tutte le sequenze in un unico DNAStringSet
+sequenze_dna <- c(seq_human, seq_chimp, seq_mouse)
+sequenze_dna
+
+library(msa)
+# Esegui l'allineamento multiplo
+allineamento_finale <- msa(sequenze_dna, "Muscle")
+
+# Stampa l'allineamento
+print(allineamento_finale, show="complete")
+
+writeXStringSet(allineamento_finale@unmasked, filepath = "allineamento_HBB_mRNA.fasta", format="fasta")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

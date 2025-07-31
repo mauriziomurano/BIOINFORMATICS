@@ -11,7 +11,7 @@
 
 
 
-<title>Visualizzazioni Dati in Bioinformatica</title>
+<title>ALLINEAMENTO</title>
 
 <script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -254,13 +254,13 @@ $(document).ready(function () {
   <a href="SECONDA.html">SECONDA</a>
 </li>
 <li>
-  <a href="TERZA.html">TERZA</a>
+  <a href="ALLINEAMENTO.html">ALLINEAMENTO</a>
 </li>
 <li>
   <a href="QUARTA.html">QUARTA</a>
 </li>
 <li>
-  <a href="QUINTA.html">QUINTA</a>
+  <a href="BANCHE.html">BANCHE</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -279,12 +279,65 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Visualizzazioni Dati in Bioinformatica</h1>
+<h1 class="title toc-ignore">ALLINEAMENTO</h1>
 
 </div>
 
 
-
+<pre><code>## DNAStringSet object of length 3:
+##     width seq                                                                   names               
+## [1]   453 ATGGTGCATCTGACTCCTGAGGAGAAGTCTGCC...GCCCTGGCCCACAAGTATCACTAAGCTCGCTTT Homo sapiens
+## [2]   453 CATTTCTGTTCATTTCAGTCCTGGAGTTTGCAG...TCTGTGTTTGGTGCTTTTTTAGCAGACCTCACT Pan troglodytes
+## [3]   465 ATGAAGAGACACTTCCGTCCGTCTCTGATAAAG...GGCCACCCATACCTGCAGGAGCTGCTGGAGACC Mus musculus</code></pre>
+<pre><code>## 
+## MsaDNAMultipleAlignment with 3 rows and 546 columns
+##     aln (1..74)                                                                names
+## [1] ATGAAGAGACACTTCCGTCCGTCTCTGATAAAGACAGAAGCGTGGGAAGG----------CTATGAGTTTGCAG Mus musculus
+## [2] ATG-------------GTGCATCTGACTCCTGAGGAGAAGTCTGCCGT------------TACTGCCCTGTGGG Homo sapiens
+## [3] ---------CATTTCTGTTCATTTCAGTCCTGG-----AGTTTGCAGTGGGGTTTCTGACCAATGCCTTCGTTT Pan troglodytes
+## Con ATG------CA?TTC?GT?CATCTCAGTCCTGG??AGAAGT?TGC?GTGG----------CAATGCCTT?G??G Consensus 
+## 
+##     aln (75..148)                                                              names
+## [1] ACAAGGAGATCA----AGATCACGGAGTCGACGGACTGCTATGGGGCCGTTCTG-TGGCCCTCGGCCATGGTGC Mus musculus
+## [2] GCAAGGTGAACGT---GGAT---GAAGTTGGTGGTGAGGCCCTGGGCAG-GCTGCTGGTGGTCTACC----CTT Homo sapiens
+## [3] TCTTGGTGAATTTTTGGGAT---GTAGTGAAGAGGCAGCCACTGAGCAACAGTGATTGTGTGCTGCTGTGTCTC Pan troglodytes
+## Con ?CAAGGTGAAC?T---GGAT---G?AGT?GA?GG?CAGCCACTGGGCAG??CTG?TGGTG?TCTGCC?TG?CTC Consensus 
+## 
+##     aln (149..222)                                                             names
+## [1] TGTGTCA-----CTTTT------TGGACTCTCAT---CGCGATCAATACAACC----TGCT------GGACAAG Mus musculus
+## [2] GGACCCAGAGGTTCTTT--------GAGTCCTTT---GGGGATCTGTCCACTCCTGATGCT-------GTTATG Homo sapiens
+## [3] AGCATCAGCCGGCTTTTCCTGCATGGACTGCTGTTCCTGAGTGCTATCCAGCTTACCCACTTCCAGAAGTTGAG Pan troglodytes
+## Con ?G??TCAG??G?CTTTT------TGGACTCCT?T---?G?GATCTATCCA?CC????TGCT------?GTTAAG Consensus 
+## 
+##     aln (223..296)                                                             names
+## [1] AAGATCATTGAGCTGGGAGCCGGAACCGGACTCGTTACCATAGTAACCAG--CCTCCTCGGAGCACAGGTGACC Mus musculus
+## [2] GGCAACCCTAAGGTGAAGGC-----------------TCATGGCAAGAAAGTGCTCG--GTGCCTTTAGTGA-- Homo sapiens
+## [3] TGAACCACTGAA-------------------------CCACAGCTACCAAGCCATCATCATGCTATGGATGA-- Pan troglodytes
+## Con ?G?A?CACTGAG?TG???GC-----------------CCATAGCAACCAAG?CCTC?TCGTGCCAT?GGTGA-- Consensus 
+## 
+##     aln (297..370)                                                             names
+## [1] TCCACTGACCTGCCGGACGTCCTGGCCAACCTGAGGCACAA---TGTGAATCGTAACACCAGAGGGCGCTGCAG Mus musculus
+## [2] -----TGGCCTGGCTCA---CCTGGACAACCTCAAGGGCACCTTTGCCACAC------TGAGTGAGCTGCACTG Homo sapiens
+## [3] ----------TTGCAAA---CCAAGCCAACCTCTGGCTTGC---TGCCTGCC------TCAGCCTGCTTTACTG Pan troglodytes
+## Con -----TG?CCTGGC??A---CCTGGCCAACCTCAGGC?CAC---TGCCA??C------TCAG?G?GCT?TACTG Consensus 
+## 
+##     aln (371..444)                                                             names
+## [1] ACACGAGCCGCAGGTGA------CAGAGCT----GATCTG--GGGTCAGCAGCTGG----AGGAGCGATTCCCC Mus musculus
+## [2] TGACAAGCTGCACGTGGATC-CTGAGAACTTCAGGCTCCT--GGGCAACGTGCTGGTCTGTGTGCTGGCCCATC Homo sapiens
+## [3] CTCCAAGCT-CATCCGTTTCTCTCACACCTTCCTGATCTGCTTGGCAAGCTG--GGTCTCCAGGAAGATCTCCC Pan troglodytes
+## Con ??ACAAGCTGCA?GTG??TC-CTCAGA?CTTC??GATCTG--GGGCAAGCTGCTGGTCT??GGG??GATCCCCC Consensus 
+## 
+##     aln (445..518)                                                             names
+## [1] C-----------GATACACCTGT-CAGTAT-GACTACATCCT----AGCGGCGGACGTGGTGTACGGCCACCCA Mus musculus
+## [2] ACTTTGGCAAAGAATTCACCCCACCAGTGCAGGCTGCCTATCAGAAAGTGGTGGCTGGTGTGGCTAA-TGCCCT Homo sapiens
+## [3] A-----------GATGCTCCTGGGTATTATTCTTTGCTCCTGCATCTGCACTGTCCTCTGTGTTTGG-TGCTTT Pan troglodytes
+## Con A-----------GAT?CACCTG??CAGTAT?G?CTGC?TCT?????AGCGGTGGCCG?TGTGT?TGG-TGCCCT Consensus 
+## 
+##     aln (519..546)               names
+## [1] TACCTGCAGGAGCTGCTGGAGACC---- Mus musculus
+## [2] GGCCCACAAGTATCACTAAGCTCGCTTT Homo sapiens
+## [3] T-TTAGCAGACCTCACT----------- Pan troglodytes
+## Con T?CC?GCAGG??TCACT?????C?---- Consensus</code></pre>
 
 
 

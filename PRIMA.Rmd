@@ -30,10 +30,7 @@ Si riconosce facilmente il codone di inizio (Met) e quelli di fine (Stp)
 ## Ricerca dei codoni di inizio e fine in una sequenza di DNA 
 
 ```{r, warning=FALSE, message=FALSE}
-accession_id <- "3022387165"
-database_name <- "nuccore"
-
-FASTA_1 <- entrez_fetch(db = database_name, id = accession_id, rettype = "fasta", retmode = "text")
+FASTA_1 <- entrez_fetch(db = "nuccore", id = "3022387165", rettype = "fasta", retmode = "text")
 ```
 
 Utiliziamo la mia Super-Funzione FASTA per visualizzare il contenuto del fetch:

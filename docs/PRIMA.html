@@ -254,13 +254,13 @@ $(document).ready(function () {
   <a href="SECONDA.html">SECONDA</a>
 </li>
 <li>
-  <a href="TERZA.html">TERZA</a>
+  <a href="ALLINEAMENTO.html">ALLINEAMENTO</a>
 </li>
 <li>
   <a href="QUARTA.html">QUARTA</a>
 </li>
 <li>
-  <a href="QUINTA.html">QUINTA</a>
+  <a href="BANCHE.html">BANCHE</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -296,10 +296,7 @@ con un codone “TGA”, “TAA” o “TAG”.</p>
 <div id="ricerca-dei-codoni-di-inizio-e-fine-in-una-sequenza-di-dna"
 class="section level2">
 <h2>Ricerca dei codoni di inizio e fine in una sequenza di DNA</h2>
-<pre class="r"><code>accession_id &lt;- &quot;3022387165&quot;
-database_name &lt;- &quot;nuccore&quot;
-
-FASTA_1 &lt;- entrez_fetch(db = database_name, id = accession_id, rettype = &quot;fasta&quot;, retmode = &quot;text&quot;)</code></pre>
+<pre class="r"><code>FASTA_1 &lt;- entrez_fetch(db = &quot;nuccore&quot;, id = &quot;3022387165&quot;, rettype = &quot;fasta&quot;, retmode = &quot;text&quot;)</code></pre>
 <p>Utiliziamo la mia Super-Funzione FASTA per visualizzare il contenuto
 del fetch:</p>
 <pre class="r"><code>FASTA(FASTA_1,500)</code></pre>
