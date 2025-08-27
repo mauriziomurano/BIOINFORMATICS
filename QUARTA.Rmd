@@ -8,10 +8,120 @@ FunctionsFile <- "FUNZIONI.R"
 
 source(file.path(Base, RDataFolder, ProfileFile))
 source(file.path(Base, RDataFolder, FunctionsFile))
+
 ```
 
 ---
-title: "Visualizzazioni Dati in Bioinformatica"
-output: html_document
+title: "Microarray Analysis"
+output:
+  html_document:
+    css: styles.css
 ---
+
+
+```{r echo=FALSE, message=TRUE, warning=FALSE}
+
+
+rm(list=ls())
+
+library(Biobase)
+library(GEOquery)
+library(limma)
+library(mogene10sttranscriptcluster.db)
+library(RColorBrewer)
+library(gprofiler2)
+library(genefilter)
+library(openxlsx)
+library(piano)
+library(gplots)
+library(sva)
+library(msigdbr)
+
+```
+
+### Matrice "ID delle sonde" - "ID dei campioni" e selezione dei campioni (Primi 12)
+
+![](img1.png){width=180px height=auto}
+
+```{r}
+
+# Il modo più affidabile per ottenere un ExpressionSet
+# getGEO restituirà una lista di ExpressionSet, quindi ne estrai il primo.
+A <- getGEO("GSE76999", GSEMatrix = TRUE, getGPL = FALSE)
+
+# Se il dataset contiene una sola matrice, estraila dal primo elemento della lista
+B <- A[[1]]
+
+# Ora puoi ispezionare l'oggetto ExpressionSet
+varLabels(B)
+
+B$organism_ch1
+
+B$title
+
+C <- exprs(B)
+
+C[1:5,1:12]
+
+
+boxplot(C[1:2,1:12], las=2, cex.axis = 0.7)
+
+```
+
+
+
+
+
+### Differential Expression Analysis by Limma
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

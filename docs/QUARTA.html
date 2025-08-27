@@ -11,7 +11,7 @@
 
 
 
-<title>Visualizzazioni Dati in Bioinformatica</title>
+<title>Microarray Analysis</title>
 
 <script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -279,12 +279,178 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Visualizzazioni Dati in Bioinformatica</h1>
+<h1 class="title toc-ignore">Microarray Analysis</h1>
 
 </div>
 
 
+<pre><code>## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view with &#39;browseVignettes()&#39;. To cite
+##     Bioconductor, see &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.</code></pre>
+<pre><code>## 
+## Caricamento pacchetto: &#39;Biobase&#39;</code></pre>
+<pre><code>## Il seguente oggetto è mascherato da &#39;package:robustbase&#39;:
+## 
+##     rowMedians</code></pre>
+<pre><code>## Setting options(&#39;download.file.method.GEOquery&#39;=&#39;auto&#39;)</code></pre>
+<pre><code>## Setting options(&#39;GEOquery.inmemory.gpl&#39;=FALSE)</code></pre>
+<pre><code>## 
+## Caricamento pacchetto: &#39;limma&#39;</code></pre>
+<pre><code>## Il seguente oggetto è mascherato da &#39;package:BiocGenerics&#39;:
+## 
+##     plotMA</code></pre>
+<pre><code>## Il seguente oggetto è mascherato da &#39;package:seqinr&#39;:
+## 
+##     zscore</code></pre>
+<pre><code>## Caricamento del pacchetto richiesto: AnnotationDbi</code></pre>
+<pre><code>## 
+## Caricamento pacchetto: &#39;AnnotationDbi&#39;</code></pre>
+<pre><code>## Il seguente oggetto è mascherato da &#39;package:MASS&#39;:
+## 
+##     select</code></pre>
+<pre><code>## Il seguente oggetto è mascherato da &#39;package:dplyr&#39;:
+## 
+##     select</code></pre>
+<pre><code>## Caricamento del pacchetto richiesto: org.Mm.eg.db</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## </code></pre>
+<pre><code>## 
+## Caricamento pacchetto: &#39;genefilter&#39;</code></pre>
+<pre><code>## Il seguente oggetto è mascherato da &#39;package:psych&#39;:
+## 
+##     AUC</code></pre>
+<pre><code>## Il seguente oggetto è mascherato da &#39;package:MASS&#39;:
+## 
+##     area</code></pre>
+<pre><code>## Il seguente oggetto è mascherato da &#39;package:car&#39;:
+## 
+##     Anova</code></pre>
+<pre><code>## 
+## Caricamento pacchetto: &#39;gplots&#39;</code></pre>
+<pre><code>## Il seguente oggetto è mascherato da &#39;package:IRanges&#39;:
+## 
+##     space</code></pre>
+<pre><code>## Il seguente oggetto è mascherato da &#39;package:S4Vectors&#39;:
+## 
+##     space</code></pre>
+<pre><code>## Il seguente oggetto è mascherato da &#39;package:stats&#39;:
+## 
+##     lowess</code></pre>
+<pre><code>## Caricamento del pacchetto richiesto: mgcv</code></pre>
+<pre><code>## Caricamento del pacchetto richiesto: nlme</code></pre>
+<pre><code>## 
+## Caricamento pacchetto: &#39;nlme&#39;</code></pre>
+<pre><code>## Il seguente oggetto è mascherato da &#39;package:Biostrings&#39;:
+## 
+##     collapse</code></pre>
+<pre><code>## Il seguente oggetto è mascherato da &#39;package:IRanges&#39;:
+## 
+##     collapse</code></pre>
+<pre><code>## Il seguente oggetto è mascherato da &#39;package:seqinr&#39;:
+## 
+##     gls</code></pre>
+<pre><code>## Il seguente oggetto è mascherato da &#39;package:dplyr&#39;:
+## 
+##     collapse</code></pre>
+<pre><code>## This is mgcv 1.9-3. For overview type &#39;help(&quot;mgcv-package&quot;)&#39;.</code></pre>
+<pre><code>## Caricamento del pacchetto richiesto: BiocParallel</code></pre>
+<div
+id="matrice-id-delle-sonde---id-dei-campioni-e-selezione-dei-campioni-primi-12"
+class="section level3">
+<h3>Matrice “ID delle sonde” - “ID dei campioni” e selezione dei
+campioni (Primi 12)</h3>
+<p><img src="img1.png" width="180" /></p>
+<pre class="r"><code># Il modo più affidabile per ottenere un ExpressionSet
+# getGEO restituirà una lista di ExpressionSet, quindi ne estrai il primo.
+A &lt;- getGEO(&quot;GSE76999&quot;, GSEMatrix = TRUE, getGPL = FALSE)</code></pre>
+<pre><code>## Found 1 file(s)</code></pre>
+<pre><code>## GSE76999_series_matrix.txt.gz</code></pre>
+<pre class="r"><code># Se il dataset contiene una sola matrice, estraila dal primo elemento della lista
+B &lt;- A[[1]]
 
+# Ora puoi ispezionare l&#39;oggetto ExpressionSet
+varLabels(B)</code></pre>
+<pre><code>##  [1] &quot;title&quot;                   &quot;geo_accession&quot;           &quot;status&quot;                 
+##  [4] &quot;submission_date&quot;         &quot;last_update_date&quot;        &quot;type&quot;                   
+##  [7] &quot;channel_count&quot;           &quot;source_name_ch1&quot;         &quot;organism_ch1&quot;           
+## [10] &quot;characteristics_ch1&quot;     &quot;characteristics_ch1.1&quot;   &quot;characteristics_ch1.2&quot;  
+## [13] &quot;treatment_protocol_ch1&quot;  &quot;growth_protocol_ch1&quot;     &quot;molecule_ch1&quot;           
+## [16] &quot;extract_protocol_ch1&quot;    &quot;label_ch1&quot;               &quot;label_protocol_ch1&quot;     
+## [19] &quot;taxid_ch1&quot;               &quot;hyb_protocol&quot;            &quot;scan_protocol&quot;          
+## [22] &quot;description&quot;             &quot;data_processing&quot;         &quot;data_processing.1&quot;      
+## [25] &quot;data_processing.2&quot;       &quot;platform_id&quot;             &quot;contact_name&quot;           
+## [28] &quot;contact_email&quot;           &quot;contact_department&quot;      &quot;contact_institute&quot;      
+## [31] &quot;contact_address&quot;         &quot;contact_city&quot;            &quot;contact_zip/postal_code&quot;
+## [34] &quot;contact_country&quot;         &quot;supplementary_file&quot;      &quot;data_row_count&quot;         
+## [37] &quot;relation&quot;                &quot;relation.1&quot;              &quot;age:ch1&quot;                
+## [40] &quot;strain:ch1&quot;              &quot;tissue:ch1&quot;</code></pre>
+<pre class="r"><code>B$organism_ch1</code></pre>
+<pre><code>##  [1] &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot;
+##  [7] &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot;
+## [13] &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot;
+## [19] &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot;
+## [25] &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot;
+## [31] &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot;</code></pre>
+<pre class="r"><code>B$title</code></pre>
+<pre><code>##  [1] &quot;Monocyte extracted from adult (wk6-12) Bone Marrow, biological replicate 1&quot;                                     
+##  [2] &quot;Monocyte extracted from adult (wk6-12) Bone Marrow, biological replicate 2&quot;                                     
+##  [3] &quot;Monocyte extracted from adult (wk6-12) Bone Marrow, biological replicate 3&quot;                                     
+##  [4] &quot;Monocyte extracted from adult (wk6-12) Bone Marrow, biological replicate 4&quot;                                     
+##  [5] &quot;Monocyte extracted from E15.5 Fetal Liver, biological replicate 1&quot;                                              
+##  [6] &quot;Monocyte extracted from E15.5 Fetal Liver, biological replicate 2&quot;                                              
+##  [7] &quot;Monocyte extracted from E15.5 Fetal Liver, biological replicate 3&quot;                                              
+##  [8] &quot;Monocyte extracted from E15.5 Fetal Liver, biological replicate 4&quot;                                              
+##  [9] &quot;Macrophage extracted from E12.5 Yolk Sac, biological replicate 1&quot;                                               
+## [10] &quot;Macrophage extracted from E12.5 Yolk Sac, biological replicate 2&quot;                                               
+## [11] &quot;Macrophage extracted from E12.5 Yolk Sac, biological replicate 3&quot;                                               
+## [12] &quot;Macrophage extracted from E12.5 Yolk Sac, biological replicate 4&quot;                                               
+## [13] &quot;Alveolar Macrophage extracted from adult (wk6-12) mice via Bronchoalveolar lavage, biological replicate 1&quot;      
+## [14] &quot;Alveolar Macrophage extracted from adult (wk6-12) mice via Bronchoalveolar lavage, biological replicate 2&quot;      
+## [15] &quot;Alveolar Macrophage extracted from adult (wk6-12) mice via Bronchoalveolar lavage, biological replicate 3&quot;      
+## [16] &quot;Alveolar Macrophage extracted from adult (wk6-12) mice via Bronchoalveolar lavage, biological replicate 4&quot;      
+## [17] &quot;Alveolar Macrophage derived from transferred Bone Marrow Monocytes, 6 wks post-transfer, biological replicate 1&quot;
+## [18] &quot;Alveolar Macrophage derived from transferred Bone Marrow Monocytes, 6 wks post-transfer, biological replicate 2&quot;
+## [19] &quot;Alveolar Macrophage derived from transferred Bone Marrow Monocytes, 6 wks post-transfer, biological replicate 3&quot;
+## [20] &quot;Alveolar Macrophage derived from transferred Bone Marrow Monocytes, 6 wks post-transfer, biological replicate 4&quot;
+## [21] &quot;Alveolar Macrophage derived from transferred Fetal Liver Monocytes, 6 wks post-transfer, biological replicate 1&quot;
+## [22] &quot;Alveolar Macrophage derived from transferred Fetal Liver Monocytes, 6 wks post-transfer, biological replicate 2&quot;
+## [23] &quot;Alveolar Macrophage derived from transferred Fetal Liver Monocytes, 6 wks post-transfer, biological replicate 3&quot;
+## [24] &quot;Alveolar Macrophage derived from transferred Fetal Liver Monocytes, 6 wks post-transfer, biological replicate 4&quot;
+## [25] &quot;Alveolar Macrophage derived from transferred Yolk Sac Macrophages, 6 wks post-transfer, biological replicate 1&quot; 
+## [26] &quot;Alveolar Macrophage derived from transferred Yolk Sac Macrophages, 6 wks post-transfer, biological replicate 2&quot; 
+## [27] &quot;Alveolar Macrophage derived from transferred Yolk Sac Macrophages, 6 wks post-transfer, biological replicate 3&quot; 
+## [28] &quot;Alveolar Macrophage derived from transferred Yolk Sac Macrophages, 6 wks post-transfer, biological replicate 4&quot; 
+## [29] &quot;Alveolar Macrophage derived from transferred Alveolar macrophages, 6 wks post-transfer, biological replicate 1&quot; 
+## [30] &quot;Alveolar Macrophage derived from transferred Alveolar macrophages, 6 wks post-transfer, biological replicate 2&quot; 
+## [31] &quot;Alveolar Macrophage derived from transferred Alveolar macrophages, 6 wks post-transfer, biological replicate 3&quot; 
+## [32] &quot;Alveolar Macrophage derived from transferred Alveolar macrophages, 6 wks post-transfer, biological replicate 4&quot; 
+## [33] &quot;Alveolar Macrophage extracted from 6 wk old wild type mice via Bronchoalveolar lavage, biological replicate 1&quot;  
+## [34] &quot;Alveolar Macrophage extracted from 6 wk old wild type mice via Bronchoalveolar lavage, biological replicate 2&quot;  
+## [35] &quot;Alveolar Macrophage extracted from 6 wk old wild type mice via Bronchoalveolar lavage, biological replicate 3&quot;  
+## [36] &quot;Alveolar Macrophage extracted from 6 wk old wild type mice via Bronchoalveolar lavage, biological replicate 4&quot;</code></pre>
+<pre class="r"><code>C &lt;- exprs(B)
+
+C[1:5,1:12]</code></pre>
+<pre><code>##          GSM2042244 GSM2042245 GSM2042246 GSM2042247 GSM2042248 GSM2042249 GSM2042250 GSM2042251
+## 10338001  12.883736  12.710357  12.808904  12.728285  12.670743  12.582576  12.728665  12.701661
+## 10338002   5.478638   4.836992   5.354476   5.311100   5.128454   5.158269   5.576625   5.174163
+## 10338003  11.565683  11.007533  11.348052  11.232528  10.989176  11.017759  11.300946  11.105487
+## 10338004   9.784679   9.218110   7.900875   9.508223   7.373025   7.647630   9.188661   9.042846
+## 10338005   2.179659   1.997411   2.215015   2.134441   2.062177   2.174181   2.091476   2.102721
+##          GSM2042252 GSM2042253 GSM2042254 GSM2042255
+## 10338001  12.845415  12.763705  12.760986  12.609271
+## 10338002   4.967542   5.210838   5.116310   4.890626
+## 10338003  11.282599  11.216054  11.144170  10.939133
+## 10338004   7.527401   9.193056   7.072794   9.433758
+## 10338005   2.073256   2.095818   2.140202   2.067220</code></pre>
+<pre class="r"><code>boxplot(C[1:2,1:12], las=2, cex.axis = 0.7)</code></pre>
+<p><img src="QUARTA_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="differential-expression-analysis-by-limma"
+class="section level3">
+<h3>Differential Expression Analysis by Limma</h3>
+</div>
 
 
 

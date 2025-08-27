@@ -23,9 +23,11 @@ NC_ Indica la sequenza di un intero cromosoma
 
 
 
-## NCBI
+## NCBI -  Sequenza Genomica
 
-```{r echo=FALSE}
+Dati di sequenza del DNA. L'output è una stringa di testo o un oggetto DNAStringSet che contiene la sequenza di un singolo gene (o di una sua porzione), come nell'esempio (HBB).
+
+```{r}
 
 Sys.setenv("VDB_RETREZ_EMAIL" = "tua.email@esempio.com") # CAMBIA QUI CON LA TUA EMAIL
 
@@ -41,3 +43,18 @@ names(seq_human) <- "Homo sapiens"
 ```
 
 
+
+
+## getGEO - Microarray Expression (Microarray Analysis)
+
+Dati di espressione genica (livelli di RNA). L'output è un oggetto ExpressionSet che contiene una matrice con migliaia di geni (features) e i livelli di espressione per decine di campioni.
+
+```{r}
+
+A <- getGEO("GSE76999", GSEMatrix = TRUE, getGPL = FALSE)
+B <- esetA[[1]]
+varLabels(B)
+
+B$organism_ch1
+B$title
+```
