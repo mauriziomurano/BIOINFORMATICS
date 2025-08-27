@@ -284,92 +284,17 @@ $(document).ready(function () {
 </div>
 
 
-<pre><code>## Welcome to Bioconductor
-## 
-##     Vignettes contain introductory material; view with &#39;browseVignettes()&#39;. To cite
-##     Bioconductor, see &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.</code></pre>
-<pre><code>## 
-## Caricamento pacchetto: &#39;Biobase&#39;</code></pre>
-<pre><code>## Il seguente oggetto è mascherato da &#39;package:robustbase&#39;:
-## 
-##     rowMedians</code></pre>
-<pre><code>## Setting options(&#39;download.file.method.GEOquery&#39;=&#39;auto&#39;)</code></pre>
-<pre><code>## Setting options(&#39;GEOquery.inmemory.gpl&#39;=FALSE)</code></pre>
-<pre><code>## 
-## Caricamento pacchetto: &#39;limma&#39;</code></pre>
-<pre><code>## Il seguente oggetto è mascherato da &#39;package:BiocGenerics&#39;:
-## 
-##     plotMA</code></pre>
-<pre><code>## Il seguente oggetto è mascherato da &#39;package:seqinr&#39;:
-## 
-##     zscore</code></pre>
-<pre><code>## Caricamento del pacchetto richiesto: AnnotationDbi</code></pre>
-<pre><code>## 
-## Caricamento pacchetto: &#39;AnnotationDbi&#39;</code></pre>
-<pre><code>## Il seguente oggetto è mascherato da &#39;package:MASS&#39;:
-## 
-##     select</code></pre>
-<pre><code>## Il seguente oggetto è mascherato da &#39;package:dplyr&#39;:
-## 
-##     select</code></pre>
-<pre><code>## Caricamento del pacchetto richiesto: org.Mm.eg.db</code></pre>
-<pre><code>## </code></pre>
-<pre><code>## </code></pre>
-<pre><code>## 
-## Caricamento pacchetto: &#39;genefilter&#39;</code></pre>
-<pre><code>## Il seguente oggetto è mascherato da &#39;package:psych&#39;:
-## 
-##     AUC</code></pre>
-<pre><code>## Il seguente oggetto è mascherato da &#39;package:MASS&#39;:
-## 
-##     area</code></pre>
-<pre><code>## Il seguente oggetto è mascherato da &#39;package:car&#39;:
-## 
-##     Anova</code></pre>
-<pre><code>## 
-## Caricamento pacchetto: &#39;gplots&#39;</code></pre>
-<pre><code>## Il seguente oggetto è mascherato da &#39;package:IRanges&#39;:
-## 
-##     space</code></pre>
-<pre><code>## Il seguente oggetto è mascherato da &#39;package:S4Vectors&#39;:
-## 
-##     space</code></pre>
-<pre><code>## Il seguente oggetto è mascherato da &#39;package:stats&#39;:
-## 
-##     lowess</code></pre>
-<pre><code>## Caricamento del pacchetto richiesto: mgcv</code></pre>
-<pre><code>## Caricamento del pacchetto richiesto: nlme</code></pre>
-<pre><code>## 
-## Caricamento pacchetto: &#39;nlme&#39;</code></pre>
-<pre><code>## Il seguente oggetto è mascherato da &#39;package:Biostrings&#39;:
-## 
-##     collapse</code></pre>
-<pre><code>## Il seguente oggetto è mascherato da &#39;package:IRanges&#39;:
-## 
-##     collapse</code></pre>
-<pre><code>## Il seguente oggetto è mascherato da &#39;package:seqinr&#39;:
-## 
-##     gls</code></pre>
-<pre><code>## Il seguente oggetto è mascherato da &#39;package:dplyr&#39;:
-## 
-##     collapse</code></pre>
-<pre><code>## This is mgcv 1.9-3. For overview type &#39;help(&quot;mgcv-package&quot;)&#39;.</code></pre>
-<pre><code>## Caricamento del pacchetto richiesto: BiocParallel</code></pre>
 <div
 id="matrice-id-delle-sonde---id-dei-campioni-e-selezione-dei-campioni-primi-12"
 class="section level3">
 <h3>Matrice “ID delle sonde” - “ID dei campioni” e selezione dei
 campioni (Primi 12)</h3>
 <p><img src="img1.png" width="180" /></p>
-<pre class="r"><code># Il modo più affidabile per ottenere un ExpressionSet
-# getGEO restituirà una lista di ExpressionSet, quindi ne estrai il primo.
-A &lt;- getGEO(&quot;GSE76999&quot;, GSEMatrix = TRUE, getGPL = FALSE)</code></pre>
+<pre class="r"><code>A &lt;- getGEO(&quot;GSE76999&quot;, GSEMatrix = TRUE, getGPL = FALSE)</code></pre>
 <pre><code>## Found 1 file(s)</code></pre>
 <pre><code>## GSE76999_series_matrix.txt.gz</code></pre>
-<pre class="r"><code># Se il dataset contiene una sola matrice, estraila dal primo elemento della lista
-B &lt;- A[[1]]
+<pre class="r"><code>B &lt;- A[[1]]
 
-# Ora puoi ispezionare l&#39;oggetto ExpressionSet
 varLabels(B)</code></pre>
 <pre><code>##  [1] &quot;title&quot;                   &quot;geo_accession&quot;           &quot;status&quot;                 
 ##  [4] &quot;submission_date&quot;         &quot;last_update_date&quot;        &quot;type&quot;                   

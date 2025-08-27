@@ -19,7 +19,7 @@ output:
 ---
 
 
-```{r echo=FALSE, message=TRUE, warning=FALSE}
+```{r,echo=FALSE, include=FALSE, warning=FALSE, message=FALSE}
 
 
 rm(list=ls())
@@ -45,14 +45,11 @@ library(msigdbr)
 
 ```{r}
 
-# Il modo più affidabile per ottenere un ExpressionSet
-# getGEO restituirà una lista di ExpressionSet, quindi ne estrai il primo.
+
 A <- getGEO("GSE76999", GSEMatrix = TRUE, getGPL = FALSE)
 
-# Se il dataset contiene una sola matrice, estraila dal primo elemento della lista
 B <- A[[1]]
 
-# Ora puoi ispezionare l'oggetto ExpressionSet
 varLabels(B)
 
 B$organism_ch1
