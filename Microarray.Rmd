@@ -12,7 +12,7 @@ source(file.path(Base, RDataFolder, FunctionsFile))
 ```
 
 ---
-title: "Microarray Analysis"
+title: "Microarray"
 output:
   html_document:
     css: styles.css
