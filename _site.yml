@@ -10,8 +10,8 @@ navbar:
       href: SECONDA.html
     - text: "ALLINEAMENTO"
       href: ALLINEAMENTO.html      
-    - text: "Microarray Analysis"
-      href: Microarray Analysis.html   
+    - text: "Microarray"
+      href: Microarray.html   
     - text: "BANCHE"
       href: BANCHE.html   
       
