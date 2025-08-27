@@ -1,0 +1,211 @@
+```{r,echo=FALSE, include=FALSE, warning=FALSE, message=FALSE}
+
+Base <- Sys.getenv("USERPROFILE")
+Folder <- "OneDrive - Università degli Studi di Milano/DATASET REPOSITORY"
+RDataFolder <- "OneDrive - Università degli Studi di Milano/RDATA"
+ProfileFile <- ".Rprofile"
+FunctionsFile <- "FUNZIONI.R"
+
+source(file.path(Base, RDataFolder, ProfileFile))
+source(file.path(Base, RDataFolder, FunctionsFile))
+
+```
+
+---
+title: "Microarray Analysis"
+output:
+  html_document:
+    css: styles.css
+---
+
+
+```{r,echo=FALSE, include=FALSE, warning=FALSE, message=FALSE}
+
+
+rm(list=ls())
+
+library(Biobase)
+library(GEOquery)
+library(limma)
+library(mogene10sttranscriptcluster.db)
+library(RColorBrewer)
+library(gprofiler2)
+library(genefilter)
+library(openxlsx)
+library(piano)
+library(gplots)
+library(sva)
+library(msigdbr)
+
+```
+
+### Matrice "ID delle sonde" - "ID dei campioni" e selezione dei campioni (Primi 12)
+
+![](img1.png){width=180px height=auto}
+
+```{r}
+
+
+A <- getGEO("GSE76999", GSEMatrix = TRUE, getGPL = FALSE)
+
+B <- A[[1]]
+
+varLabels(B)
+
+B$organism_ch1
+
+B$title  # Analogo a B$description
+
+C <- exprs(B)
+
+C[1:5,1:12]
+
+
+boxplot(C[1:2,1:12], las=2, cex.axis = 0.7)
+
+```
+
+
+
+
+
+### Differential Expression Analysis by Limma
+
+Adesso cerchiamo quali geni sono espressi con delle differenze tra le tre categorie di esperimento:
+
+Bone Marrow
+
+Fetal Liver
+
+Yolk Sac
+
+
+
+```{r}
+
+# Trasformiamo i valori in scala logaritmica (ex = C)
+D <- log2(C)
+
+labels <- c("BM_MOs","FL_MOs","YS_Macs")
+sel_groups <- factor(rep(labels, each=4))
+
+
+# Consideriamo E come il sottoinsieme dell'oggetto B ridotto a 12 colonne
+E <- B[,1:12]
+
+E$description <- sel_groups
+
+design <- model.matrix(~ description + 0, E)
+
+colnames(design) <- levels(sel_groups)
+
+
+fit <- lmFit(E, design)
+
+
+# Build comparison and compute the satistics: Dici a limma esattamente quali gruppi vuoi confrontare tra loro (es. BM_MOs contro FL_MOs).
+cont.matrix <- makeContrasts(BM_MOs-FL_MOs, BM_MOs-YS_Macs, FL_MOs-YS_Macs, levels=design)
+# Apply the contrast matrix to the linear model - Esegue i confronti
+fit2 <- contrasts.fit(fit, cont.matrix)
+# Generate the statistics (proportion -> assumed proportion of genes which are differentially expressed): Migliora le statistiche. eBayes è un passo fondamentale di limma che usa una tecnica statistica per "prestare" informazioni tra i geni, migliorando l'affidabilità delle stime di variabilità. Questo è cruciale per ottenere valori P più precisi, specialmente quando si hanno pochi campioni.
+fit2 <- eBayes(fit2, proportion = 0.05)
+
+# Extract the sig. DE genesCosa fa? Estrae i risultati finali. La funzione topTable() prende il modello fit2 e lo usa per creare una tabella con i  geni che mostrano una differenza di espressione statisticamente significativa. Usa il parametro coef per specificare quale confronto vuoi vedere (ad esempio, coef=1 per BM_MOs-FL_MOs).
+# coef=1  BM_MOs-FL_MOs
+# coef=2  BM_MOs-YS_Macs
+# coef=3  FL_MOs-YS_Macs
+de_genes_BM_MOs_FL_MOs <- topTable(fit2, coef=1, adjust="fdr", p.value=0.05, number=Inf)
+de_genes_BM_MOs_YS_Macs <- topTable(fit2, coef=2, adjust="fdr", p.value=0.05, number=Inf)
+de_genes_FL_MOs_YS_Macs <- topTable(fit2, coef=3, adjust="fdr", p.value=0.05, number=Inf)
+
+head(de_genes_BM_MOs_FL_MOs) # show top de genes in BM_MO vs FL_MO comparirson. 
+
+# Get all the DE genes regardless the comparisons
+all_de_genes <- topTable(fit2, adjust="fdr", p.value=0.05, number=Inf)
+all_genes_BM_MOs_FL_MOs <- topTable(fit2, coef=1, adjust="fdr", p.value=1, number=Inf)
+# These tables will be used later
+
+# Output in an excel file
+wb <- createWorkbook()
+# Create each sheet
+addWorksheet(wb, "de_genes_BM_MOs_FL_MOs")
+addWorksheet(wb, "de_genes_BM_MOs_YS_Macs")
+addWorksheet(wb, "de_genes_FL_MOs_YS_Macs")
+# Write the data into each sheet
+writeData(wb, "de_genes_BM_MOs_FL_MOs", de_genes_BM_MOs_FL_MOs, rowNames = FALSE)
+writeData(wb, "de_genes_BM_MOs_YS_Macs", de_genes_BM_MOs_YS_Macs, rowNames = FALSE)
+writeData(wb, "de_genes_FL_MOs_YS_Macs", de_genes_FL_MOs_YS_Macs, rowNames = FALSE)
+saveWorkbook(wb, "DE_genes_GSE76999.xlsx", overwrite = TRUE)
+
+
+```
+
+
+
+```{r}
+columns(mogene10sttranscriptcluster.db)
+
+ID <- featureNames(E)
+
+tmp <- select(mogene10sttranscriptcluster.db, ID, c("SYMBOL", "ENTREZID"))
+tmp <- na.omit(tmp)
+
+all_genes_BM_MOs_FL_MOs$ENTREZID <- tmp$ENTREZID[match(rownames(all_genes_BM_MOs_FL_MOs), tmp$PROBEID)]
+all_de_genes$symbol <- tmp$SYMBOL[match(rownames(all_de_genes), tmp$PROBEID)]
+all_de_genes <- na.omit(all_de_genes)
+de_genes_BM_MOs_FL_MOs$ENTREZID <- tmp$ENTREZID[match(rownames(de_genes_BM_MOs_FL_MOs), tmp$PROBEID)]
+#de_genes_BM_MOs_FL_MOs$symbol <- na.omit(tmp$ENTREZID[match(rownames(de_genes_BM_MOs_FL_MOs), tmp$PROBEID)])
+de_genes_BM_MOs_YS_Macs$ENTREZID <- tmp$ENTREZID[match(rownames(de_genes_BM_MOs_YS_Macs), tmp$PROBEID)]
+#de_genes_BM_MOs_YS_Macs$symbol <- na.omit(tmp$ENTREZID[match(rownames(de_genes_BM_MOs_YS_Macs), tmp$PROBEID)])
+de_genes_FL_MOs_YS_Macs$ENTREZID <- tmp$ENTREZID[match(rownames(de_genes_FL_MOs_YS_Macs), tmp$PROBEID)]
+#de_genes_FL_MOs_YS_Macs$symbol <- na.omit(tmp$ENTREZID[match(rownames(de_genes_FL_MOs_YS_Macs), tmp$PROBEID)])
+
+ma <- fit2[,"BM_MOs - FL_MOs"]
+limma::plotMA(ma)
+
+```
+
+
+Cosa puoi dedurre dal tuo grafico?
+
+La forma a "ventaglio" o "imbuto" è tipica e attesa. I geni a bassa espressione (a sinistra del grafico) mostrano una maggiore variabilità nel log-fold change, mentre i geni ad alta espressione (a destra) sono molto più stabili e raggruppati intorno allo zero. Questo è un buon segno e indica che i dati sono stati normalizzati correttamente.
+
+I punti più lontani dalla linea orizzontale dello 0 sull'asse Y rappresentano i geni con la più grande differenza di espressione tra BM-MOs e FL-MOs. Molti di questi punti (che rappresentano i geni differenzialmente espressi) si concentrano nelle regioni a più alta espressione, come si può notare dalla coda del grafico.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

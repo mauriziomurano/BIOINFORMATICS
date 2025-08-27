@@ -257,7 +257,7 @@ $(document).ready(function () {
   <a href="ALLINEAMENTO.html">ALLINEAMENTO</a>
 </li>
 <li>
-  <a href="QUARTA.html">QUARTA</a>
+  <a href="Microarray Analysis.html">Microarray Analysis</a>
 </li>
 <li>
   <a href="BANCHE.html">BANCHE</a>
@@ -407,11 +407,11 @@ c(“ensembl_transcript_id”, “cdna”), …) sono sequenze di cDNA
 di vari ceppi e tipi di influenza.</p>
 <pre class="r"><code>results &lt;- entrez_search(db = &quot;nuccore&quot;, term = &quot;influenza virus&quot;, retmax = 30)
 print(results$ids)</code></pre>
-<pre><code>##  [1] &quot;3032445352&quot; &quot;3032445349&quot; &quot;3032390876&quot; &quot;3032390874&quot; &quot;3029571483&quot; &quot;1821954852&quot; &quot;3029571278&quot;
-##  [8] &quot;3030740915&quot; &quot;3028549304&quot; &quot;3028513222&quot; &quot;3028513220&quot; &quot;3028513218&quot; &quot;3028513216&quot; &quot;3028513214&quot;
-## [15] &quot;3028513212&quot; &quot;3028513210&quot; &quot;3028513208&quot; &quot;3028513206&quot; &quot;3027639294&quot; &quot;3027639291&quot; &quot;2737424104&quot;
-## [22] &quot;2737424100&quot; &quot;2737424096&quot; &quot;2737424095&quot; &quot;2737424094&quot; &quot;2737424093&quot; &quot;2737424066&quot; &quot;2737424065&quot;
-## [29] &quot;2737424056&quot; &quot;2737424055&quot;</code></pre>
+<pre><code>##  [1] &quot;3048033254&quot; &quot;3048033252&quot; &quot;3042835645&quot; &quot;3046338319&quot; &quot;3046338318&quot; &quot;3046338317&quot; &quot;3046338316&quot;
+##  [8] &quot;3046338315&quot; &quot;3046338314&quot; &quot;3046337885&quot; &quot;3046337883&quot; &quot;3046337881&quot; &quot;3046337879&quot; &quot;3046288745&quot;
+## [15] &quot;3046288338&quot; &quot;3046288336&quot; &quot;3046288334&quot; &quot;3046288332&quot; &quot;3046287943&quot; &quot;3046287942&quot; &quot;3046287941&quot;
+## [22] &quot;3046287940&quot; &quot;3046260687&quot; &quot;3046260686&quot; &quot;3046260685&quot; &quot;3046260684&quot; &quot;3046260183&quot; &quot;3046260182&quot;
+## [29] &quot;3046260181&quot; &quot;3046260180&quot;</code></pre>
 <p>Questa ricerca è più mirata: vogliamo le sequenze ID del gene CFTR
 ([Gene]) specificamente dall’Homo sapiens ([Organism]) e che siano di
 tipo mRNA RefSeq:</p>
@@ -419,12 +419,12 @@ tipo mRNA RefSeq:</p>
                                        term = &quot;CFTR[Gene] AND Homo sapiens[Organism] AND NM_&quot;,
                                        retmax = 10)
 print(results$ids)</code></pre>
-<pre><code>## [1] &quot;832627291&quot;  &quot;2194973865&quot; &quot;568815591&quot;  &quot;71517410&quot;   &quot;51095065&quot;</code></pre>
+<pre><code>## [1] &quot;2194973865&quot; &quot;568815591&quot;  &quot;832627291&quot;  &quot;71517410&quot;   &quot;51095065&quot;</code></pre>
 <p>Ricerca del Genoma Umano</p>
 <pre class="r"><code>results &lt;- entrez_search(db = &quot;nuccore&quot;, term = &quot;Homo sapiens[Organism] AND chromosome 1 AND complete genome AND RefSeq&quot;, retmax = 3)
 
 print(results$ids)</code></pre>
-<pre><code>## [1] &quot;1519246517&quot; &quot;1519311725&quot; &quot;1519246553&quot;</code></pre>
+<pre><code>## [1] &quot;2194974903&quot; &quot;2194972450&quot; &quot;568815597&quot;</code></pre>
 <p>Il genoma umano è un progetto in continuo aggiornamento. Nel corso
 del tempo, sono state prodotte diverse versioni di riferimento
 dell’assemblaggio del genoma (chiamate “assemblies”). Ogni nuova

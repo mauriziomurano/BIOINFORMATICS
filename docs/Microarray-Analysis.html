@@ -257,7 +257,7 @@ $(document).ready(function () {
   <a href="ALLINEAMENTO.html">ALLINEAMENTO</a>
 </li>
 <li>
-  <a href="QUARTA.html">QUARTA</a>
+  <a href="Microarray Analysis.html">Microarray Analysis</a>
 </li>
 <li>
   <a href="BANCHE.html">BANCHE</a>
@@ -317,7 +317,7 @@ varLabels(B)</code></pre>
 ## [19] &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot;
 ## [25] &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot;
 ## [31] &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot; &quot;Mus musculus&quot;</code></pre>
-<pre class="r"><code>B$title</code></pre>
+<pre class="r"><code>B$title  # Analogo a B$description</code></pre>
 <pre><code>##  [1] &quot;Monocyte extracted from adult (wk6-12) Bone Marrow, biological replicate 1&quot;                                     
 ##  [2] &quot;Monocyte extracted from adult (wk6-12) Bone Marrow, biological replicate 2&quot;                                     
 ##  [3] &quot;Monocyte extracted from adult (wk6-12) Bone Marrow, biological replicate 3&quot;                                     
@@ -370,11 +370,111 @@ C[1:5,1:12]</code></pre>
 ## 10338004   7.527401   9.193056   7.072794   9.433758
 ## 10338005   2.073256   2.095818   2.140202   2.067220</code></pre>
 <pre class="r"><code>boxplot(C[1:2,1:12], las=2, cex.axis = 0.7)</code></pre>
-<p><img src="QUARTA_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="Microarray-Analysis_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>
 <div id="differential-expression-analysis-by-limma"
 class="section level3">
 <h3>Differential Expression Analysis by Limma</h3>
+<p>Adesso cerchiamo quali geni sono espressi con delle differenze tra le
+tre categorie di esperimento:</p>
+<p>Bone Marrow</p>
+<p>Fetal Liver</p>
+<p>Yolk Sac</p>
+<pre class="r"><code># Trasformiamo i valori in scala logaritmica (ex = C)
+D &lt;- log2(C)
+
+labels &lt;- c(&quot;BM_MOs&quot;,&quot;FL_MOs&quot;,&quot;YS_Macs&quot;)
+sel_groups &lt;- factor(rep(labels, each=4))
+
+
+# Consideriamo E come il sottoinsieme dell&#39;oggetto B ridotto a 12 colonne
+E &lt;- B[,1:12]
+
+E$description &lt;- sel_groups
+
+design &lt;- model.matrix(~ description + 0, E)
+
+colnames(design) &lt;- levels(sel_groups)
+
+
+fit &lt;- lmFit(E, design)
+
+
+# Build comparison and compute the satistics: Dici a limma esattamente quali gruppi vuoi confrontare tra loro (es. BM_MOs contro FL_MOs).
+cont.matrix &lt;- makeContrasts(BM_MOs-FL_MOs, BM_MOs-YS_Macs, FL_MOs-YS_Macs, levels=design)
+# Apply the contrast matrix to the linear model - Esegue i confronti
+fit2 &lt;- contrasts.fit(fit, cont.matrix)
+# Generate the statistics (proportion -&gt; assumed proportion of genes which are differentially expressed): Migliora le statistiche. eBayes è un passo fondamentale di limma che usa una tecnica statistica per &quot;prestare&quot; informazioni tra i geni, migliorando l&#39;affidabilità delle stime di variabilità. Questo è cruciale per ottenere valori P più precisi, specialmente quando si hanno pochi campioni.
+fit2 &lt;- eBayes(fit2, proportion = 0.05)
+
+# Extract the sig. DE genesCosa fa? Estrae i risultati finali. La funzione topTable() prende il modello fit2 e lo usa per creare una tabella con i  geni che mostrano una differenza di espressione statisticamente significativa. Usa il parametro coef per specificare quale confronto vuoi vedere (ad esempio, coef=1 per BM_MOs-FL_MOs).
+# coef=1  BM_MOs-FL_MOs
+# coef=2  BM_MOs-YS_Macs
+# coef=3  FL_MOs-YS_Macs
+de_genes_BM_MOs_FL_MOs &lt;- topTable(fit2, coef=1, adjust=&quot;fdr&quot;, p.value=0.05, number=Inf)
+de_genes_BM_MOs_YS_Macs &lt;- topTable(fit2, coef=2, adjust=&quot;fdr&quot;, p.value=0.05, number=Inf)
+de_genes_FL_MOs_YS_Macs &lt;- topTable(fit2, coef=3, adjust=&quot;fdr&quot;, p.value=0.05, number=Inf)
+
+head(de_genes_BM_MOs_FL_MOs) # show top de genes in BM_MO vs FL_MO comparirson. </code></pre>
+<pre><code>##              logFC  AveExpr         t      P.Value    adj.P.Val        B
+## 10435497 -8.689962 5.561077 -46.92658 1.881934e-14 6.691403e-10 16.30296
+## 10501020  7.496752 6.800520  36.32079 3.472725e-13 6.173810e-09 15.72408
+## 10387568  2.975392 6.801732  26.57701 1.193418e-11 1.414439e-07 14.64075
+## 10608637 -8.113364 8.242008 -25.58598 1.831783e-11 1.628272e-07 14.47541
+## 10400143  4.879170 6.266135  24.84392 2.551738e-11 1.814592e-07 14.34200
+## 10435504 -6.364942 4.983137 -24.35867 3.185952e-11 1.887995e-07 14.24994</code></pre>
+<pre class="r"><code># Get all the DE genes regardless the comparisons
+all_de_genes &lt;- topTable(fit2, adjust=&quot;fdr&quot;, p.value=0.05, number=Inf)
+all_genes_BM_MOs_FL_MOs &lt;- topTable(fit2, coef=1, adjust=&quot;fdr&quot;, p.value=1, number=Inf)
+# These tables will be used later
+
+# Output in an excel file
+wb &lt;- createWorkbook()
+# Create each sheet
+addWorksheet(wb, &quot;de_genes_BM_MOs_FL_MOs&quot;)
+addWorksheet(wb, &quot;de_genes_BM_MOs_YS_Macs&quot;)
+addWorksheet(wb, &quot;de_genes_FL_MOs_YS_Macs&quot;)
+# Write the data into each sheet
+writeData(wb, &quot;de_genes_BM_MOs_FL_MOs&quot;, de_genes_BM_MOs_FL_MOs, rowNames = FALSE)
+writeData(wb, &quot;de_genes_BM_MOs_YS_Macs&quot;, de_genes_BM_MOs_YS_Macs, rowNames = FALSE)
+writeData(wb, &quot;de_genes_FL_MOs_YS_Macs&quot;, de_genes_FL_MOs_YS_Macs, rowNames = FALSE)
+saveWorkbook(wb, &quot;DE_genes_GSE76999.xlsx&quot;, overwrite = TRUE)</code></pre>
+<pre class="r"><code>columns(mogene10sttranscriptcluster.db)</code></pre>
+<pre><code>##  [1] &quot;ACCNUM&quot;       &quot;ALIAS&quot;        &quot;ENSEMBL&quot;      &quot;ENSEMBLPROT&quot;  &quot;ENSEMBLTRANS&quot; &quot;ENTREZID&quot;    
+##  [7] &quot;ENZYME&quot;       &quot;EVIDENCE&quot;     &quot;EVIDENCEALL&quot;  &quot;GENENAME&quot;     &quot;GENETYPE&quot;     &quot;GO&quot;          
+## [13] &quot;GOALL&quot;        &quot;IPI&quot;          &quot;MGI&quot;          &quot;ONTOLOGY&quot;     &quot;ONTOLOGYALL&quot;  &quot;PATH&quot;        
+## [19] &quot;PFAM&quot;         &quot;PMID&quot;         &quot;PROBEID&quot;      &quot;PROSITE&quot;      &quot;REFSEQ&quot;       &quot;SYMBOL&quot;      
+## [25] &quot;UNIPROT&quot;</code></pre>
+<pre class="r"><code>ID &lt;- featureNames(E)
+
+tmp &lt;- select(mogene10sttranscriptcluster.db, ID, c(&quot;SYMBOL&quot;, &quot;ENTREZID&quot;))</code></pre>
+<pre><code>## &#39;select()&#39; returned 1:many mapping between keys and columns</code></pre>
+<pre class="r"><code>tmp &lt;- na.omit(tmp)
+
+all_genes_BM_MOs_FL_MOs$ENTREZID &lt;- tmp$ENTREZID[match(rownames(all_genes_BM_MOs_FL_MOs), tmp$PROBEID)]
+all_de_genes$symbol &lt;- tmp$SYMBOL[match(rownames(all_de_genes), tmp$PROBEID)]
+all_de_genes &lt;- na.omit(all_de_genes)
+de_genes_BM_MOs_FL_MOs$ENTREZID &lt;- tmp$ENTREZID[match(rownames(de_genes_BM_MOs_FL_MOs), tmp$PROBEID)]
+#de_genes_BM_MOs_FL_MOs$symbol &lt;- na.omit(tmp$ENTREZID[match(rownames(de_genes_BM_MOs_FL_MOs), tmp$PROBEID)])
+de_genes_BM_MOs_YS_Macs$ENTREZID &lt;- tmp$ENTREZID[match(rownames(de_genes_BM_MOs_YS_Macs), tmp$PROBEID)]
+#de_genes_BM_MOs_YS_Macs$symbol &lt;- na.omit(tmp$ENTREZID[match(rownames(de_genes_BM_MOs_YS_Macs), tmp$PROBEID)])
+de_genes_FL_MOs_YS_Macs$ENTREZID &lt;- tmp$ENTREZID[match(rownames(de_genes_FL_MOs_YS_Macs), tmp$PROBEID)]
+#de_genes_FL_MOs_YS_Macs$symbol &lt;- na.omit(tmp$ENTREZID[match(rownames(de_genes_FL_MOs_YS_Macs), tmp$PROBEID)])
+
+ma &lt;- fit2[,&quot;BM_MOs - FL_MOs&quot;]
+limma::plotMA(ma)</code></pre>
+<p><img src="Microarray-Analysis_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Cosa puoi dedurre dal tuo grafico?</p>
+<p>La forma a “ventaglio” o “imbuto” è tipica e attesa. I geni a bassa
+espressione (a sinistra del grafico) mostrano una maggiore variabilità
+nel log-fold change, mentre i geni ad alta espressione (a destra) sono
+molto più stabili e raggruppati intorno allo zero. Questo è un buon
+segno e indica che i dati sono stati normalizzati correttamente.</p>
+<p>I punti più lontani dalla linea orizzontale dello 0 sull’asse Y
+rappresentano i geni con la più grande differenza di espressione tra
+BM-MOs e FL-MOs. Molti di questi punti (che rappresentano i geni
+differenzialmente espressi) si concentrano nelle regioni a più alta
+espressione, come si può notare dalla coda del grafico.</p>
 </div>
 
 
